@@ -1,0 +1,339 @@
+exports.START_TIME_AT_LEAST = 2
+
+exports.PAGE_DEFAULT = 1
+exports.LIMIT_DEFAULT = 10
+
+exports.POLL_CHOICES_MIN_LIMIT_DEFAULT = 0
+exports.POLL_CHOICES_MAX_LIMIT_DEFAULT = 4
+
+exports.AGREEMENT_USER_SHARE_DEFAULT = 50
+
+exports.NONCE_EXPIRY_TIME_IN_MS = 2 * 60 * 1000 //5 minutes
+
+exports.USER_AGE_MIN_LIMIT_INCLUSIVE = 5
+exports.USER_AGE_MAX_LIMIT_INCLUSIVE = 100
+
+exports.USER_ABOUT_MIN_LIMIT_EXCLUSIVE  = 0
+exports.USER_ABOUT_MAX_LIMIT_INCLUSIVE = 255
+
+exports.CRONJOB_QUEST_TYPE_START = 'start'
+exports.CRONJOB_QUEST_TYPE_END = 'end'
+
+//All user roles
+exports.USER_ROLE_ADMIN = 'admin'
+exports.USER_ROLE_PLAYER = 'player'
+exports.USER_ROLES = [
+	exports.USER_ROLE_ADMIN,
+	exports.USER_ROLE_PLAYER
+]
+
+//All content types
+exports.HARASSMENT = 'harassment'
+exports.INAPPROPRIATE_LANGUAGE = 'inappropriate-language'
+exports.SPAM = 'spam'
+exports.HATE_SPEECH = 'hate-speech'
+exports.CONTENT_TYPES = [
+	exports.HARASSMENT,
+	exports.INAPPROPRIATE_LANGUAGE,
+	exports.SPAM,
+	exports.HATE_SPEECH,
+]
+
+//All report types
+exports.REPORT_TYPE_SOLO_CHAT = 'solo-chat'
+exports.REPORT_TYPE_GROUP_CHAT = 'group-chat'
+exports.REPORT_TYPE_USER_PROFILE = 'user-profile'
+exports.REPORT_TYPES = [
+	exports.REPORT_TYPE_SOLO_CHAT,
+	exports.REPORT_TYPE_GROUP_CHAT,
+	exports.REPORT_TYPE_USER_PROFILE
+]
+
+// All Report Search By Category Values
+exports.CATEGORY_BY_USER_PROFILE = 'user-profile'
+exports.CATEGORY_BY_CONTENT = 'content'
+exports.CATEGORY_BY = [
+	exports.CATEGORY_BY_USER_PROFILE,
+	exports.CATEGORY_BY_CONTENT
+]
+
+//All team  player types
+exports.TEAM_PLAYER_TYPE_ACTIVE = 'active'
+exports.TEAM_PLAYER_ROLE_REMOTE = 'remote'
+exports.TEAM_PLAYER_TYPES = [
+	exports.TEAM_PLAYER_TYPE_ACTIVE,
+	exports.TEAM_PLAYER_ROLE_REMOTE
+]
+
+//FriendShip Status
+exports.FRIENDSHIP_STATUS_PENDING = 'pending'
+exports.FRIENDSHIP_STATUS_ACCEPTED = 'accepted'
+exports.FRIENDSHIP_STATUS_LIST = [
+	exports.FRIENDSHIP_STATUS_PENDING,
+	exports.FRIENDSHIP_STATUS_ACCEPTED
+]
+
+exports.TIMEFRAME_TODAY = 'today'
+exports.TIMEFRAME_WEEKLY = 'weekly'
+exports.TIMEFRAME_MONTHLY= 'monthly'
+exports.TIMEFRAME_ALL_TIME= 'alltime'
+
+exports.TIMEFRAME_STATUS_LIST = [
+	exports.TIMEFRAME_TODAY,
+	exports.TIMEFRAME_WEEKLY,
+	exports.TIMEFRAME_MONTHLY,
+	exports.TIMEFRAME_ALL_TIME,
+
+]
+
+//FriendShip Status
+exports.FRIENDSHIP_STATUS_FOR_RESPONSE_FRIEND = 'friend'
+exports.FRIENDSHIP_STATUS_FOR_RESPONSE_NOT_FRIEND = 'not-friend'
+exports.FRIENDSHIP_STATUS_FOR_RESPONSE_WAITING_FOR_RESPONSE = 'waiting-for-response'
+exports.FRIENDSHIP_STATUS_FOR_RESPONSE_HAVE_TO_TAKE_ACTION = 'have-to-take-action'
+exports.FRIENDSHIP_STATUS_FOR_RESPONSE_LIST = [
+	exports.FRIENDSHIP_STATUS_FOR_RESPONSE_FRIEND,
+	exports.FRIENDSHIP_STATUS_FOR_RESPONSE_NOT_FRIEND,
+	exports.FRIENDSHIP_STATUS_FOR_RESPONSE_WAITING_FOR_RESPONSE,
+	exports.FRIENDSHIP_STATUS_FOR_RESPONSE_HAVE_TO_TAKE_ACTION
+]
+
+//All quest modes
+exports.QUEST_MODE_REGULAR = 'regular'
+exports.QUEST_MODE_GRAND = 'grand'
+exports.QUEST_MODE_FREE_TO_PLAY = 'free-to-play'
+exports.QUEST_MODES = [
+	exports.QUEST_MODE_REGULAR,
+	exports.QUEST_MODE_GRAND,
+	exports.QUEST_MODE_FREE_TO_PLAY
+]
+
+//All quest statuses
+exports.QUEST_STATUS_ACTIVATE = 'activate'
+exports.QUEST_STATUS_DEACTIVATE = 'de-activate'
+exports.QUEST_STATUSES = [
+	exports.QUEST_STATUS_ACTIVATE,
+	exports.QUEST_STATUS_DEACTIVATE
+]
+
+//All quest states
+exports.QUEST_STATE_ACTIVE = 'active'
+exports.QUEST_STATE_INACTIVE = 'in-active'
+exports.QUEST_STATE_FINISHED = 'finished'
+exports.QUEST_STATES = [
+	exports.QUEST_STATE_ACTIVE,
+	exports.QUEST_STATE_INACTIVE,
+	exports.QUEST_STATE_FINISHED
+]
+
+//All team types
+exports.TEAM_TYPE_SOLO = 'solo'
+exports.TEAM_TYPE_FAMILY = 'family'
+exports.TEAM_TYPES = [
+	exports.TEAM_TYPE_SOLO,
+	exports.TEAM_TYPE_FAMILY
+]
+
+// All task statues
+exports.TASK_STATUS_ACTIVATE = 'activate'
+exports.TASK_STATUS_DEACTIVATE = 'de-activate'
+exports.TASK_STATUSES = [
+	exports.TASK_STATUS_ACTIVATE,
+	exports.TASK_STATUS_DEACTIVATE
+]
+
+//All task types
+exports.TASK_TYPE_BOTTLE_TO_DESTROY = 'bottle-to-destroy'
+exports.TASK_TYPE_ICONS_IN_THE_AIR = 'icons-in-the-air'
+exports.TASK_TYPE_ROBOT = 'robot'
+exports.TASK_TYPE_CUP = 'cup'
+exports.TASK_TYPE_LETTER_OR_PICTURE = 'letter-or-picture'
+exports.TASK_TYPE_HIT_THE_BALL_ON_TARGET = 'hit-the-ball-on-target'
+exports.TASK_TYPE_TREASURE = 'treasure'
+exports.TASK_TYPE_GIFT_CARD = 'gift-card'
+exports.TASK_TYPE_MAJID_AL_FUTTAIM = 'majid-al-futtaim'
+
+exports.TASK_TYPES = [
+	exports.TASK_TYPE_BOTTLE_TO_DESTROY,
+	exports.TASK_TYPE_ICONS_IN_THE_AIR,
+	exports.TASK_TYPE_ROBOT,
+	exports.TASK_TYPE_CUP,
+	exports.TASK_TYPE_LETTER_OR_PICTURE,
+	exports.TASK_TYPE_HIT_THE_BALL_ON_TARGET,
+	exports.TASK_TYPE_TREASURE,
+	exports.TASK_TYPE_GIFT_CARD,
+	exports.TASK_TYPE_MAJID_AL_FUTTAIM
+]
+
+// All task completion status
+exports.TASK_COMPLETION_STATUS_DONE = 'done'
+exports.TASK_COMPLETION_STATUS_FAILED = 'failed'
+exports.TASK_COMPLETION_STATUS_NOT_APPLICABLE = 'not-applicable'
+exports.TASK_COMPLETION_STATUS_ACTIVE = 'active'
+exports.TASK_COMPLETION_STATUSES = [
+	exports.TASK_COMPLETION_STATUS_DONE,
+	exports.TASK_COMPLETION_STATUS_FAILED,
+	exports.TASK_COMPLETION_STATUS_NOT_APPLICABLE
+]
+
+//All clue types
+exports.REPRESENTATION_OF_TASK_TYPE_POPUP_WITH_TIMER = 'popup-with-timer'
+exports.REPRESENTATION_OF_TASK_TYPE_QR_CODE_TO_WEBPAGE_WITH_TEXT_OF_CLUE = 'QR-code-to-webpage-with-text-of-clue'
+exports.REPRESENTATION_OF_TASK_TYPES = [
+	exports.REPRESENTATION_OF_TASK_TYPE_POPUP_WITH_TIMER,
+	exports.REPRESENTATION_OF_TASK_TYPE_QR_CODE_TO_WEBPAGE_WITH_TEXT_OF_CLUE
+]
+
+//All announcement statuses
+exports.ANNOUNCEMENT_STATUS_PUBLISH = 'publish'
+exports.ANNOUNCEMENT_STATUS_UNPUBLISH = 'un-publish'
+exports.ANNOUNCEMENT_STATUSES = [
+	exports.ANNOUNCEMENT_STATUS_PUBLISH,
+	exports.ANNOUNCEMENT_STATUS_UNPUBLISH
+]
+
+// All nftcollection statues
+exports.NFT_COLLECTION_STATUS_ACTIVATE = 'activate'
+exports.NFT_COLLECTION_STATUS_DEACTIVATE = 'de-activate'
+exports.NFT_COLLECTION_STATUSES = [
+	exports.NFT_COLLECTION_STATUS_ACTIVATE,
+	exports.NFT_COLLECTION_STATUS_DEACTIVATE
+]
+
+// All Notifications 
+exports.NOTIFICATION_VIEW_ANNOUNCEMENT = 'VIEW_ANNOUNCEMENT'
+exports.NOTIFICATION_SEND_REQUEST = 'SEND_REQUEST'
+exports.NOTIFICATION_REMOVE_FRIEND = 'REMOVE_FRIEND'
+exports.NOTIFICATION_NEW_QUEST_STARTED = 'NEW_QUEST_STARTED'
+exports.NOTIFICATION_REMOTE_PLAYER_JOINED_QUEST = 'REMOTE_PLAYER_JOINED_QUEST'
+exports.NOTIFICATION_ACTIVE_PLAYER_ACCEPTED_AGREEMENT = 'ACTIVE_PLAYER_ACCEPTED_AGREEMENT'
+exports.NOTIFICATION_NEW_POLL_START = 'NEW_POLL_START'
+exports.NOTIFICATION_POLL_ENDED = 'POLL_ENDED'
+
+exports.NOTIFICATION_ARRAY = [
+	exports.NOTIFICATION_SEND_REQUEST,
+	exports.NOTIFICATION_REMOVE_FRIEND,
+	exports.NOTIFICATION_NEW_GAME,
+	exports.NOTIFICATION_NEW_QUEST_STARTED,
+	exports.NOTIFICATION_ACTIVE_PLAYER_ACCEPTED_AGREEMENT,
+	exports.NOTIFICATION_NEW_POLL_START,
+	exports.NOTIFICATION_POLL_ENDED,
+	exports.NOTIFICATION_VIEW_ANNOUNCEMENT
+]
+
+//All agreement statuses
+exports.AGREEMENT_STATUS_PENDING = 'pending'
+exports.AGREEMENT_STATUS_DONE = 'done'
+exports.AGREEMENT_STATUS_CANCELLED = 'cancelled'
+exports.AGREEMENT_STATUSES = [
+	exports.AGREEMENT_STATUS_PENDING,
+	exports.AGREEMENT_STATUS_DONE,
+	exports.AGREEMENT_STATUS_CANCELLED
+]
+
+exports.AGREEMENT_FAMILY_MEMBER_STATUS__PENDING = 'pending'
+exports.AGREEMENT_FAMILY_MEMBER_STATUS__DONE = 'done'
+exports.AGREEMENT_FAMILY_MEMBER_STATUS__CANCELLED = 'cancelled'
+exports.AGREEMENT_FAMILY_MEMBER_STATUS_NOT_APPLICABLE = 'not applicable'
+
+exports.AGREEMENT_FAMILY_MEMBER_STATUSES = [
+	exports.AGREEMENT_FAMILY_MEMBER_STATUS__PENDING,
+	exports.AGREEMENT_FAMILY_MEMBER_STATUS__DONE,
+	exports.AGREEMENT_FAMILY_MEMBER_STATUS__CANCELLED,
+	exports.AGREEMENT_FAMILY_MEMBER_STATUS_NOT_APPLICABLE
+]
+// All Prize pool statues
+exports.PRIZE_POOL_STATUS_ENABLE = 'activate'
+exports.PRIZE_POOL_STATUS_DISABLE = 'de-activate'
+exports.PRIZE_POOL_STATUSES = [
+	exports.PRIZE_POOL_STATUS_ENABLE,
+	exports.PRIZE_POOL_STATUS_DISABLE
+]
+
+// All Reward types
+exports.REWARD_TYPE_NFT = 'nft'
+exports.REWARD_TYPE_CH_COINS = 'ch-coins'
+exports.REWARD_TYPE_BOTH = 'both'
+exports.REWARD_TYPES = [
+	exports.REWARD_TYPE_NFT,
+	exports.REWARD_TYPE_CH_COINS,
+	exports.REWARD_TYPE_BOTH
+]
+
+// All Reward status
+exports.USER_REWARD_STATUS_PENDING = 'pending'
+exports.USER_REWARD_STATUS_RECEIVED = 'received'
+exports.USER_REWARD_STATUS_NOT_APPLICABLE = 'not-applicable'
+exports.USER_REWARD_STATUSES = [
+	exports.USER_REWARD_STATUS_PENDING,
+	exports.USER_REWARD_STATUS_RECEIVED,
+	exports.USER_REWARD_STATUS_NOT_APPLICABLE
+]
+
+// All Poll statuses
+exports.POLL_STATUS_ACTIVE = 'active'
+exports.POLL_STATUS_INACTIVE = 'in-active'
+exports.POLL_STATUS_COMPLETED = 'completed'
+exports.POLL_STATUSES = [
+	exports.POLL_STATUS_ACTIVE,
+	exports.POLL_STATUS_INACTIVE,
+	exports.POLL_STATUS_COMPLETED
+]
+
+// All Notification Types
+exports.NOTIFICATION_TYPE_REPORT = 'report'
+exports.NOTIFICATION_TYPES = [
+	exports.NOTIFICATION_TYPE_REPORT
+]
+
+exports.NOTIFICATION_DEFAULT_MESSAGE = 'New Notification'
+exports.NOTIFICATION_MESSAGE_ON_REPORT = 'A new report has been filed. Please check for details.'
+// Twillio
+exports.TWILIO_TOKEN_EXPIRY = 86400 // 24 Hours
+
+// All Poll statuses
+exports.ITEM_TYPE_NFT = 'nft'
+exports.ITEM_TYPE_GAME_BOOST = 'gameBoost'
+exports.ITEM_TYPE_COIN = 'coin'
+exports.ITEM_TYPE_TICKET = 'ticket'
+exports.ITEM_TYPES = [
+	exports.ITEM_TYPE_NFT,
+	exports.ITEM_TYPE_GAME_BOOST,
+	exports.ITEM_TYPE_COIN ,
+	exports.ITEM_TYPE_TICKET
+]
+
+exports.GAME_BOOST_TEAM_PLUS_ONE = 'TEAM+1'
+exports.GAME_BOOST_RANDOM = 'RANDOM'
+exports.GAME_BOOST_SQUAD_SPRINT='SQUAD_SPRINT'
+exports.GAME_BOOST_MAGNETIC = 'MAGNETIC'
+exports.GAME_BOOST_SECRET = 'SECRET'
+
+exports.GAME_BOOST_TO_BE_UPDATED_AFTER_TASK = [
+	exports.GAME_BOOST_MAGNETIC,
+	exports.GAME_BOOST_SECRET
+]
+
+exports.TOKEN_CRH = 'CRH'
+exports.TOKEN_MATIC = 'MATIC'
+
+exports.TOKENS =[
+	exports.TOKEN_CRH,
+	exports.TOKEN_MATIC
+]
+
+exports.TOKEN_NAME_CRH = 'CH-COIN'
+exports.TOKEN_NAME_MATIC = 'POLYGON'
+
+exports.TOKENS_NAMES =[
+	exports.TOKEN_NAME_CRH,
+	exports.TOKEN_NAME_MATIC
+]
+
+exports.TOKEN_CRH_IMAGE_URI = 'https://gateway.pinata.cloud/ipfs/QmZkcmS9pqprBHnUN1pc1NWsQgFd8DnTqx9UC6UT9FH8VF'
+exports.TOKEN_MATIC_IMAGE_URI = 'https://gateway.pinata.cloud/ipfs/QmcvDn5VWSHBDQ2etePWm9moDRzyRd3MFQYfwBFj5f1i73'
+
+exports.TOKEN_IMAGE_URI = [
+	exports.TOKEN_CRH_IMAGE_URI,
+	exports.TOKEN_MATIC_IMAGE_URI
+]

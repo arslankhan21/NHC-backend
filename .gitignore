@@ -1,0 +1,24 @@
+# PACKAGES
+/node_modules
+
+# ENVIRONMENT VARIABLES
+.env
+
+# IDE/Editors configuration
+/.vscode
+
+# Workspace
+/.idea/workspace.xml
+
+# For testing
+src/dbMutation.js
+
+# Service Account for kms
+crypto-hunters-game-d1403641ada8.json
+
+# Firebase Private Key
+crypto-hunters-game-firebase-adminsdk-xva6p-5ea9693f65.json
+
+# Other
+.prettierignore
+.prettierrc
