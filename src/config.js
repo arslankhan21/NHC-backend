@@ -9,6 +9,13 @@ const config = {
     PORT: process.env.PORT || 3000,
     JWT_SECRET: process.env.JWT_SECRET || 'secret', // Change jwt_secret before production --- TODO
     JWT_EXPIRY: process.env.JWT_EXPIRY || '1w', // Reduce the expiry time before production --- TODO
+    DB_HOST: process.env.DB_HOST,
+    DB_PORT: process.env.DB_PORT,
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_AUTH_SOURCE: process.env.DB_AUTH_SOURCE,
+    DB_NAME: process.env.DB_NAME,
+    //ZOOM credentials
     ZOOM_OAUTH_BASE_URL: process.env.ZOOM_OAUTH_BASE_URL || 'https://zoom.us/oauth',
     ZOOM_REST_API_BASE_URL: process.env.ZOOM_REST_API_BASE_URL || 'https://api.zoom.us/v2',
     ZOOM_USER_ID: process.env.ZOOM_USER_ID,

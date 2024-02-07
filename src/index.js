@@ -1,10 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-// const multer = require('multer')
+const multer = require('multer')
 
-//connect with db
-// require('./db')
+// connect with db
+require('./db')
 
 const { PORT } = require('./config')
 const routes = require('./routes')

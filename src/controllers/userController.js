@@ -14,6 +14,33 @@ const my = async (req, res) => {
     };
 }
 
+
+
+const createUser = async (req, res) => {
+    try{
+        const { email , first_name, last_name , password } = req.body
+        const createdUser = await userHelper.createUser(email, first_name, last_name ,password);
+        return responseSuccess(res, { ...createdUser})
+    }
+    catch(error){
+        console.log("createUser -> userController -> error: ", error);
+    };
+}
+
+const createMeeting = async (req, res) => {
+    try{
+        const { userId } = req.body
+        const creatingMeeting = await userHelper.createMeeting(userId);
+        return responseSuccess(res, { ...creatingMeeting})
+    }
+    catch(error){
+        console.log("createUser -> userController -> error: ", error);
+    };
+}
+
+
 module.exports = {
+    createUser,
+    createMeeting,
     my
 }
