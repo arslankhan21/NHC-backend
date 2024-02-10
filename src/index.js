@@ -12,7 +12,11 @@ const routes = require('./routes')
 //Sever config
 const app = express()
 const http = require('http').Server(app)
-
+global.io = require('socket.io')(http, { path: '/socket.io' })
+app.get('/', (req, res) => {
+    res.send("Queue System Server");
+});
+  
 app.use(cors())
 
 // for parsing application/json
@@ -20,6 +24,9 @@ app.use(bodyParser.json())
 
 // For backend APIs
 app.use('/api', routes)
+
+// For sockets
+require('./routes/sockets')
 
 http.listen(PORT, () => {
     console.log(`Server is listening on ${PORT}`)
