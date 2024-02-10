@@ -16,6 +16,18 @@ const RESPONSE_ERRORS = {
         MESSAGE: 'You are not authorized to request/modify the resource',
         STATUS: 401
     },
+
+    DUPLICATE_USER: {
+        CODE:  'DUPLICATE_USER',
+        MESSAGE: 'User With This ID already Exist',
+        STATUS: 401
+    },
+
+    DUPLICATE_BOOTH: {
+        CODE:  'DUPLICATE_BOOTH',
+        MESSAGE: 'Booth With This ID already Exist',
+        STATUS: 401
+    },
     // Common Errors
     INVALID_OBJECT_ID_FORMAT: {
         CODE: 'INVALID_OBJECT_ID_FORMAT',
