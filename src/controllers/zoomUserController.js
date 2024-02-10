@@ -17,12 +17,12 @@ const {
 
   const getZoomUserById = async (req, res) => {
     try {
-        console.log("req.params: ",req.params);
-        const userId = req.params.userId
+      console.log("-----------req.params: ",req.params);
+      const userId = req.params.userId
       const data = await zoomUserHelper.getZoomUserById(userId)
       return responseSuccess(res, { ...data });
     } catch (error) {
-      console.log("error: ", error);
+      throw new Error(error.message);
     }
   };
 
@@ -38,11 +38,24 @@ const {
       return responseSuccess(res, { ...createdUser });
     } catch (error) {
       console.log("createZoomUser -> zoomUserController -> error: ", error);
+      throw new Error(error);
     }
+  };
+
+  const getListOfZoomUsers = async (req, res) => {
+    try {
+      const getAllZoomUsers = await zoomUserHelper.getUsers();
+      return responseSuccess(res, { ...getAllZoomUsers });
+    } 
+    catch (error) {
+      console.log("error: " , error)
+      throw new Error(error);
+    };
   };
 
   module.exports = {
     adminUser,
     getZoomUserById,
+    getListOfZoomUsers,
     createZoomUser
   };

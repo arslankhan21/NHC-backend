@@ -152,9 +152,6 @@ io.use(function (socket, next) {
     socket.on('getAllUser', async () =>{
         io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection(['userId', 'userName', 'location']))
     });
-
-
-
 })
 .on('error', (err) => { 
     console.log('error: ', err); 
