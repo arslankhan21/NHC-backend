@@ -303,6 +303,17 @@ const deleteUser = async (userId) => {
   }
 };
 
+const getUsersBySpecificProjection = async (projection) => {
+  try {
+    // Construct the projection string dynamically
+    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
+    let query = await userSchema.find({}, projectionFields).lean();
+    return query;
+  } catch (error) {
+    throw new Error(`Failed to get all user details: ${error.message}`);
+  }
+};
+
 module.exports = {
   getToken,
   createMeetingUser,
@@ -313,4 +324,5 @@ module.exports = {
   getUsers,
   updateUser,
   deleteUser,
+  getUsersBySpecificProjection
 };

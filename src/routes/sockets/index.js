@@ -2,6 +2,7 @@
 
 const { generateRandomId } = require('../../utils/helperFunctions')
 const base64id = require('base64id')
+const userHelper = require('../../helpers/user.helper')
 
 
 
@@ -148,6 +149,10 @@ io.use(function (socket, next) {
      * @pram  [{userId ,username , location }, ...{}]
      * @description u can say find() all keys $projection {userId, username ,location}
      */
+    socket.on('getAllUser', async () =>{
+        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection(['userId', 'userName', 'location']))
+    });
+
 
 
 })
