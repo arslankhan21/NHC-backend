@@ -1,14 +1,13 @@
-const boothRouter = require('express').Router()
-const boothController = require('../../controllers/boothController')
+const boothRouter = require("express").Router();
+const boothController = require("../../controllers/boothController");
 
-boothRouter.get('/get-booth/:boothId', boothController.getBoothByID); 
-boothRouter.get('/getAllBooths', boothController.getBooths); 
+boothRouter.post("/create", boothController.createBooth);
 
-boothRouter.post('/createBooth', boothController.createBooth); 
+boothRouter.put("/update/:boothId", boothController.updateBooth);
 
-boothRouter.put('/updateBooth/:boothId', boothController.updateBooth); 
+boothRouter.delete("/delete/:boothId", boothController.deleteBooth);
+boothRouter.get("/all", boothController.getBooths);
 
-boothRouter.delete('/delete/:boothId', boothController.deleteBooth); 
+boothRouter.get("/:boothId", boothController.getBoothByID);
 
-
-module.exports = boothRouter
+module.exports = boothRouter;

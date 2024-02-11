@@ -4,12 +4,12 @@ const {
   responseServerSideError,
 } = require("../utils/responseTypes");
 const ERRORS = require("../utils/errorTypes");
-const userHelper = require("../helpers/user.helper");
+const conferenceHelper = require("../helpers/conference.helper");
 
-const createUser = async (req, res) => {
+const createConference = async (req, res) => {
   try {
-    const createdUser = await userHelper.createUser(req.body);
-    return responseSuccess(res, { ...createdUser });
+    const conference = await conferenceHelper.createConference(req.body);
+    return responseSuccess(res, conference);
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
@@ -18,12 +18,24 @@ const createUser = async (req, res) => {
   }
 };
 
-const getUserByID = async (req, res) => {
+const getConferenceById = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const user = await userHelper.getUserByID(userId);
-    console.log(user);
-    return responseSuccess(res, { ...user?._doc });
+    const { id } = req.params;
+    const conference = await conferenceHelper.getConferenceById(id);
+    return responseSuccess(res, conference);
+  } catch (error) {
+    console.log(error);
+    if (ERRORS[error.message]) {
+      return responseBadRequest(res, ERRORS[error.message]);
+    }
+    return responseServerSideError(res, error);
+  }
+};
+
+const getAllConferences = async (req, res) => {
+  try {
+    const conferences = await conferenceHelper.getAllConferences();
+    return responseSuccess(res, conferences);
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
@@ -32,10 +44,11 @@ const getUserByID = async (req, res) => {
   }
 };
 
-const getUsers = async (req, res) => {
+const updateConference = async (req, res) => {
   try {
-    const user = await userHelper.getUsers();
-    return responseSuccess(res, user);
+    const { id } = req.params;
+    const conference = await conferenceHelper.updateConference(id, req.body);
+    return responseSuccess(res, conference);
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
@@ -44,24 +57,11 @@ const getUsers = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const deleteConference = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const user = await userHelper.updateUser(userId, req.body);
-    return responseSuccess(res, { ...user?._doc });
-  } catch (error) {
-    if (ERRORS[error.message]) {
-      return responseBadRequest(res, ERRORS[error.message]);
-    }
-    return responseServerSideError(res, error);
-  }
-};
-
-const deleteUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const user = await userHelper.deleteUser(userId);
-    return responseSuccess(res, { ...user?._doc });
+    const { id } = req.params;
+    const conference = await conferenceHelper.deleteConference(id);
+    return responseSuccess(res, conference);
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
@@ -71,9 +71,9 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  createUser,
-  getUserByID,
-  getUsers,
-  updateUser,
-  deleteUser,
+  createConference,
+  getConferenceById,
+  getAllConferences,
+  updateConference,
+  deleteConference,
 };
