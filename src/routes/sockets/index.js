@@ -152,6 +152,12 @@ io.use(function (socket, next) {
     socket.on('getAllUser', async () =>{
         io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection(['userId', 'userName', 'location']))
     });
+
+    socket.on('updateUserLocation' , async ({userId , location}) =>{
+        const updateUser = await userHelper.updateUser(userId, {location: location});
+        console.log('updateUser: ',updateUser);
+        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection(['userId', 'userName', 'location']))
+    });
 })
 .on('error', (err) => { 
     console.log('error: ', err); 
