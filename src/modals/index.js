@@ -1,3 +1,4 @@
 module.exports = {
-    Auction: require('./Auction'),
-}
+  Auction: require("./Auction"),
+  Conference: require("./Conference"),
+};

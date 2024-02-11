@@ -1,3 +1,4 @@
-module.exports= {
-    auctionSchema: require('./auctionSchema'),
-}
+module.exports = {
+  //   auctionSchema: require("./auctionSchema"),
+  conferenceSchema: require("./conference.schema"),
+};
