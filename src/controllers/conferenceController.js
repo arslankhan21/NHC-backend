@@ -60,8 +60,8 @@ const updateConference = async (req, res) => {
 const deleteConference = async (req, res) => {
   try {
     const { id } = req.params;
-    await conferenceHelper.deleteConference(id);
-    return responseSuccess(res, { message: "Conference deleted successfully" });
+    const conference = await conferenceHelper.deleteConference(id);
+    return responseSuccess(res, conference);
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
