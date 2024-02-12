@@ -76,11 +76,11 @@ const deleteUser = async (userId) => {
   }
 };
 
-const getUsersBySpecificProjection = async (projection) => {
+const getUsersBySpecificProjection = async (where , projection) => {
   try {
     // Construct the projection string dynamically
     const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
-    let query = await userSchema.find({}, projectionFields).lean();
+    let query = await userSchema.find({...where}, projectionFields).lean();
     return query;
   } catch (error) {
     throw new Error(`Failed to get all user details: ${error.message}`);
