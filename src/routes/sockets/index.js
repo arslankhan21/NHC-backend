@@ -75,11 +75,18 @@ io.use(function (socket, next) {
     console.log('someone is trying to connect...')
     console.log('here is his socket.id: ', socket.id);
     const query = socket.handshake.query
-    console.log('query: ', query);
+    console.log('query: ', query , "query.userId: ", query.userId);
+    const { userId, boothId , role } = query
+    socket.decoded = { userId, boothId , role};
+
     next();
 })
 .on('connect', (socket) => {
     console.log('A user connected');
+    (async () => {
+        await userHelper.updateUser(socket.decoded.userId, { status: true });
+    })();
+   
     // socket.on('enterQueue', ({ boothId, userId, username }) => {
     //     const user = { userId, username, socketId: socket.id, next: null, prev: null };
 
@@ -103,7 +110,7 @@ io.use(function (socket, next) {
     //     });
     // });
 
-    socket.on('enterQueue', ({ boothId, userId  , username}) => {
+    socket.on('enterQueue', ({ boothId, userId  , username, role }) => {
         console.log('boothId,: ', boothId, ' userId: ', userId , ' username: ', username);
       if (!queues[boothId]) queues[boothId] = [];
         const index =queues[boothId].findIndex((user) =>{
@@ -118,7 +125,7 @@ io.use(function (socket, next) {
 
       }
       else{
-        queues[boothId].push({userId , username});
+        role !=="representative" ? queues[boothId].push({userId , username}) : null
         console.log('queues[boothId]: ', queues[boothId]);
       }
       console.log('queues: ', queues);
@@ -150,13 +157,23 @@ io.use(function (socket, next) {
      * @description u can say find() all keys $projection {userId, username ,location}
      */
     socket.on('getAllUser', async () =>{
-        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection(['userId', 'userName', 'location']))
+        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection({status: true},['userId', 'userName', 'location']))
     });
 
     socket.on('updateUserLocation' , async ({userId , location}) =>{
         const updateUser = await userHelper.updateUser(userId, {location: location});
         console.log('updateUser: ',updateUser);
-        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection(['userId', 'userName', 'location']))
+        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection({status: true},['userId', 'userName', 'location']))
+    });
+
+    socket.on('disconnect', async () =>{
+        if(socket.decoded.userId){
+            await userHelper.updateUser(socket.decoded.userId, { status: false })
+        }
+        else{
+            console.log("User ID not found")
+        }
+        
     });
 })
 .on('error', (err) => { 

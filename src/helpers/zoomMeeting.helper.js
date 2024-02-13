@@ -80,6 +80,46 @@ const createMeeting = async (userId) => {
   }
 };
 
+const userMeetings = async (userId) => {
+  try{
+    const tokenData = await helperFunctions.getToken();
+    const userMeets = await helperFunctions.getApiCall(
+      `/users/${userId}/meetings` , 
+      {
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      }
+    )
+    console.log("userMeets : ",userMeets)
+    return userMeets?.data
+  }
+  catch (error) {
+    console.log("error: ",error)
+  };
+}
+
+const getMeeting = async (meetingId) => {
+  try{
+    const tokenData = await helperFunctions.getToken();
+    const userMeets = await helperFunctions.getApiCall(
+      `/meetings/${meetingId}/` , 
+      {
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      }
+    )
+    console.log("userMeets : ",userMeets)
+    return userMeets?.data
+  }
+  catch (error) {
+    console.log("error: ",error)
+  }
+}
+
 module.exports = {
-  createMeeting
+  createMeeting,
+  userMeetings,
+  getMeeting
 };

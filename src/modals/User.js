@@ -23,8 +23,18 @@ const UserModel = new Schema(
     },
     // Adding location field
     location: {
-      type: [Number], // Define as an array of numbers
+      type: 
+      {
+        position: Schema.Types.Mixed, // Allow any type for position
+        rotation: Schema.Types.Mixed, // Allow any type for rotation
+        state: { type: String, default: "idle" }
+      }
+      // type: [Number], // Define as an array of numbers
     },
+    status: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

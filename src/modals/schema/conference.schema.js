@@ -39,6 +39,9 @@ const conferenceSchema = new Schema(
       type: [String], // Array of strings for picture URLs
       default: [], // Array of strings for picture URLs
     },
+    status:{
+      type: String, // (pending, approved, started, ended)
+    }
   },
   { timestamps: true }
 );
