@@ -110,8 +110,16 @@ io.use(function (socket, next) {
     //     });
     // });
 
-    socket.on('enterQueue', ({ boothId, userId  , username, role }) => {
-        console.log('boothId,: ', boothId, ' userId: ', userId , ' username: ', username);
+    socket.on('enterQueue', ({ username, role }) => {
+        console.log(' username: ', username , ' role: ', role);
+        console.log('socket.decoded.userId', socket.decoded.userId);
+        const { userId,  boothId } = socket.decoded
+        console.log('boothId,: ', boothId, ' userId: ', userId)
+
+        if( !userId ||  !boothId){
+            io.emit('error'," either userId is missing  or boothId");
+            return;
+        }
       if (!queues[boothId]) queues[boothId] = [];
         const index =queues[boothId].findIndex((user) =>{
             console.log('filter: ',user)
@@ -132,7 +140,13 @@ io.use(function (socket, next) {
       io.emit('queueUpdated', { boothId, queue: queues[boothId] });
     });
   
-    socket.on('leaveQueue', ({ boothId, userId }) => {
+    socket.on('leaveQueue', () => {
+        console.log('socket.decoded.userId', socket.decoded.userId);
+        const { userId,  boothId } = socket.decoded
+        if( !userId ||  !boothId){
+            io.emit('error'," either userId is missing  or boothId");
+            return;
+        }
       if (queues[boothId]) {
         queues[boothId] = queues[boothId].filter((user) =>{
             console.log('item => ', user);
@@ -160,7 +174,13 @@ io.use(function (socket, next) {
         io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection({status: true},['userId', 'userName', 'location']))
     });
 
-    socket.on('updateUserLocation' , async ({userId , location}) =>{
+    socket.on('updateUserLocation' , async ({ location}) =>{
+        console.log('socket.decoded.userId', socket.decoded.userId);
+        const { userId } = socket.decoded
+        if( !userId ){
+            io.emit('error'," userId is missing while connecting to server");
+            return;
+        }
         const updateUser = await userHelper.updateUser(userId, {location: location});
         console.log('updateUser: ',updateUser);
         io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection({status: true},['userId', 'userName', 'location']))
