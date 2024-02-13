@@ -130,10 +130,11 @@ io.use(function (socket, next) {
         
         //that user already exist in the queue
         queues[boothId][index].username = username
+        queues[boothId][index].role = role
 
       }
       else{
-        role !=="representative" ? queues[boothId].push({userId , username}) : null
+        role !=="representative" ? queues[boothId].push({userId , username , role}) : null
         console.log('queues[boothId]: ', queues[boothId]);
       }
       console.log('queues: ', queues);
