@@ -59,9 +59,27 @@ const postApiCall = async (url , body, headers) => {
             );
     }
     catch (error) {
+        console.log("postApiCall -> error: ",error)
         throw new Error(error);
     };
 };
+
+const makeApiCall = async (method , url , data ={} , headers = {}) => {
+    try{
+        const axiosConfig = {
+            method: method.toUpperCase(),
+            url: `${config.ZOOM_REST_API_BASE_URL}${url}`,
+            headers,
+            data: method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT' ? data : undefined,
+        };
+        const response = await axiosInstance(axiosConfig);
+        console.log("makeApiCall -> response: ",response)
+        return response;
+    }
+    catch(error){
+        throw new Error(error);
+    }
+}
 
 const getEnabledPaginationOption = (page, limit) => {
     let result = { enabled: false }
@@ -154,6 +172,7 @@ function generateRandomId(length = 6) {
 module.exports = {
     getApiCall,
     postApiCall,
+    makeApiCall,
     getToken,
     base64Encode,
     getEnabledPaginationOption,

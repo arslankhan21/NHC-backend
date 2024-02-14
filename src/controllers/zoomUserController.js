@@ -47,6 +47,23 @@ const {
     }
   };
 
+  const deleteZoomUser = async (req, res) => {
+    try{
+      const { auth } = req
+      const { userId } = req.params
+      const result = await zoomUserHelper.deleteZoomUser(userId,auth);
+      return responseSuccess(res, { ...result });
+    }
+    catch(error){
+      console.log(error);
+      if (ERRORS[error.message]) {
+        return responseBadRequest(res, ERRORS[error.message]);
+      }
+      return responseServerSideError(res, error);
+    };
+  };
+
+
   const getListOfZoomUsers = async (req, res) => {
     try {
       const { auth } = req
@@ -63,5 +80,6 @@ const {
     adminUser,
     getZoomUserById,
     getListOfZoomUsers,
-    createZoomUser
+    createZoomUser,
+    deleteZoomUser
   };
