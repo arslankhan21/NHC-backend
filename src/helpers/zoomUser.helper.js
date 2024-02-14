@@ -113,6 +113,23 @@ const createZoomUser = async (email, first_name, last_name, password ,auth ) => 
   }
 };
 
+const deleteZoomUser = async (userId , auth) => {
+  try{
+    const token = auth || await helperFunctions.getToken().access_token;
+    const headers = {
+      headers: {
+        Authorization: `Bearer ${token}`, // Authorization header with access token
+      },
+    }
+
+    const resposne = await helperFunctions.makeApiCall("DELETE" , `/users/${userId}?action=delete`,{}, headers);
+    return resposne?.data;
+  }
+  catch(error){
+    console.log("Error: ",error);
+  }
+}
+
 /**
  * Retrieves a list of Zoom users from the Zoom API.
  * Requires a valid access token obtained from the Zoom OAuth flow.
@@ -147,5 +164,6 @@ module.exports = {
   getMe,
   getUsers,
   getZoomUserById,
-  createZoomUser
+  createZoomUser,
+  deleteZoomUser
 };
