@@ -11,7 +11,8 @@ const createMeeting = async (req, res) => {
   try {
     console.log("createMeeting -> req.params: ", req.params)
     const { userId } = req.params;
-    const creatingMeeting = await zoomMeetingHelper.createMeeting(userId);
+    const { auth } = req.auth;
+    const creatingMeeting = await zoomMeetingHelper.createMeeting(userId ,auth);
     return responseSuccess(res, { ...creatingMeeting });
   } catch (error) {
     console.log("createUser -> userController -> error: ", error);
@@ -21,8 +22,9 @@ const createMeeting = async (req, res) => {
 const listOfUserMeetings = async (req, res) => {
   try{
     const { userId } = req.params;
+    const { auth } = req.auth;
     console.log("List of user: " , userId);
-    const listOfMeetings = await zoomMeetingHelper.userMeetings(userId);
+    const listOfMeetings = await zoomMeetingHelper.userMeetings(userId ,auth);
     return responseSuccess(res, { ...listOfMeetings });
   }
   catch(error){
@@ -33,7 +35,8 @@ const listOfUserMeetings = async (req, res) => {
 const getOneMeeting = async (req, res) => {
   try{
     const { meetingId } = req.params
-    const result = await zoomMeetingHelper.getMeeting(meetingId)
+    const { auth } = req.auth;
+    const result = await zoomMeetingHelper.getMeeting(meetingId,auth)
     return responseSuccess(res, { ...result });
   }
   catch(error){
