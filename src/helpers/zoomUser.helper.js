@@ -8,16 +8,17 @@ const helperFunctions = require('../utils/helperFunctions');
  * @returns {Promise<Object>} A promise that resolves to an object containing user details.
  * @async
  */
-const getMe = async () => {
+const getMe = async (auth) => {
   try {
     // Get the access token for authorization
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await helperFunctions.getToken().access_token;
+    console.log("getMe -> tokenData: ", tokenData);
 
     const userResponse = await helperFunctions.getApiCall(
       `/users/me`,
       {
         headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
+          Authorization: `Bearer ${tokenData}`,
         },
       }
     )
@@ -37,16 +38,16 @@ const getMe = async () => {
  * @returns {Promise<Object>} A promise that resolves to an object containing user details.
  * @async
  */
-const getZoomUserById = async (userId) => {
+const getZoomUserById = async (userId , auth) => {
   try {
     // Get the access token for authorization
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await helperFunctions.getToken().access_token;
     // Call the Zoom API to get the user's details by ID
     const userResponse = await helperFunctions.getApiCall(
       `/users/${userId}`, // The API endpoint for fetching user details by ID
       {
         headers: {
-          Authorization: `Bearer ${tokenData.access_token}`, // Authorization header with access token
+          Authorization: `Bearer ${tokenData}`, // Authorization header with access token
         },
       }
     );
@@ -70,10 +71,10 @@ const getZoomUserById = async (userId) => {
  * @returns {Promise<Object>} A promise that resolves to an object containing details of the created user.
  * @async
  */
-const createZoomUser = async (email, first_name, last_name, password) => {
+const createZoomUser = async (email, first_name, last_name, password ,auth ) => {
   try {
     // Get the access token for authorization
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await await helperFunctions.getToken().access_token;
 
     // Construct the payload for creating a new user
     const userPayload = {
@@ -98,7 +99,7 @@ const createZoomUser = async (email, first_name, last_name, password) => {
         headers: {
           "Content-Type": 'application/json', // Set the content type header
           "Accept": 'application/json', // Set the accept header
-          Authorization: `Bearer ${tokenData.access_token}`, // Authorization header with access token
+          Authorization: `Bearer ${tokenData}`, // Authorization header with access token
         },
       }
     )
@@ -121,16 +122,16 @@ const createZoomUser = async (email, first_name, last_name, password) => {
  * Each object in the array represents a single Zoom user.
  * @async
  */
-const getUsers = async () => {
+const getUsers = async (auth) => {
   try {
     // Get the access token for authorization
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await helperFunctions.getToken().access_token;
     // Call the Zoom API to fetch the list of users
     const userResponse = await helperFunctions.getApiCall(
       `/users`,
       {
         headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
+          Authorization: `Bearer ${tokenData}`,
         },
       }
     );

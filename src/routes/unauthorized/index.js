@@ -4,10 +4,12 @@ const boothRouter = require("./booth.router");
 const zoomRouter = require("./zoom.router");
 const uploadRouter = require("./upload.router");
 const conferenceRouter = require("./conference.router");
+const { zoomOAuthValidator } = require('../../middlewares')
+
 
 unauthorized.use("/user", userRouter);
 unauthorized.use("/booth", boothRouter);
-unauthorized.use("/zoom", zoomRouter);
+unauthorized.use("/zoom", zoomOAuthValidator.validateZoomOAuthToken, zoomRouter);
 unauthorized.use("/upload", uploadRouter);
 unauthorized.use("/conference", conferenceRouter);
 

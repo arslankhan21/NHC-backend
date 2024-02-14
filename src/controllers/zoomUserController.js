@@ -8,7 +8,9 @@ const {
 
   const adminUser = async (req, res) => {
     try {
-      const data = await zoomUserHelper.getMe();
+      console.log("req.auth: ", req.auth);
+      const auth  = req.auth
+      const data = await zoomUserHelper.getMe(auth);
       return responseSuccess(res, { ...data });
     } catch (error) {
       console.log("error: ", error);
@@ -19,7 +21,8 @@ const {
     try {
       console.log("-----------req.params: ",req.params);
       const userId = req.params.userId
-      const data = await zoomUserHelper.getZoomUserById(userId)
+      const { auth } = req;
+      const data = await zoomUserHelper.getZoomUserById(userId , auth);
       return responseSuccess(res, { ...data });
     } catch (error) {
       throw new Error(error.message);
@@ -29,11 +32,13 @@ const {
   const createZoomUser = async (req, res) => {
     try {
       const { email, first_name, last_name, password } = req.body;
+      const { auth } = req;
       const createdUser = await zoomUserHelper.createZoomUser(
         email,
         first_name,
         last_name,
-        password
+        password,
+        auth
       );
       return responseSuccess(res, { ...createdUser });
     } catch (error) {
@@ -44,7 +49,8 @@ const {
 
   const getListOfZoomUsers = async (req, res) => {
     try {
-      const getAllZoomUsers = await zoomUserHelper.getUsers();
+      const { auth } = req
+      const getAllZoomUsers = await zoomUserHelper.getUsers(auth);
       return responseSuccess(res, { ...getAllZoomUsers });
     } 
     catch (error) {

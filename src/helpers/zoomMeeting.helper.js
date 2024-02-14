@@ -2,7 +2,7 @@ const helperFunctions = require('../utils/helperFunctions');
 
 const createMeeting = async (userId) => {
   try {
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await helperFunctions.getToken().access_token;
     const newPayload = {
       settings: {
         allow_multiple_devices: true,
@@ -70,7 +70,7 @@ const createMeeting = async (userId) => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          Authorization: `Bearer ${tokenData.access_token}`,
+          Authorization: `Bearer ${tokenData}`,
         },
       }
     );
@@ -80,14 +80,14 @@ const createMeeting = async (userId) => {
   }
 };
 
-const userMeetings = async (userId) => {
+const userMeetings = async (userId , auth ) => {
   try{
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await helperFunctions.getToken().access_token;
     const userMeets = await helperFunctions.getApiCall(
       `/users/${userId}/meetings` , 
       {
         headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
+          Authorization: `Bearer ${tokenData}`,
         },
       }
     )
@@ -99,14 +99,14 @@ const userMeetings = async (userId) => {
   };
 }
 
-const getMeeting = async (meetingId) => {
+const getMeeting = async (meetingId , auth ) => {
   try{
-    const tokenData = await helperFunctions.getToken();
+    const tokenData = auth || await helperFunctions.getToken().access_token;
     const userMeets = await helperFunctions.getApiCall(
       `/meetings/${meetingId}/` , 
       {
         headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
+          Authorization: `Bearer ${tokenData}`,
         },
       }
     )
