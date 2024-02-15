@@ -1,14 +1,9 @@
 'use strict'
 
-const { generateRandomId } = require('../../utils/helperFunctions')
+// const { generateRandomId } = require('../../utils/helperFunctions')
 const base64id = require('base64id')
 const userHelper = require('../../helpers/user.helper')
 const boothHelper = require('../../helpers/booth.helper')
-
-
-const { generateRandomId } = require("../../utils/helperFunctions");
-const base64id = require("base64id");
-const userHelper = require("../../helpers/user.helper");
 
 /* Socket Room Data Sample
 [
