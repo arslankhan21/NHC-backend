@@ -6,6 +6,9 @@ const userHelper = require('../../helpers/user.helper')
 const boothHelper = require('../../helpers/booth.helper')
 
 
+const { generateRandomId } = require("../../utils/helperFunctions");
+const base64id = require("base64id");
+const userHelper = require("../../helpers/user.helper");
 
 /* Socket Room Data Sample
 [
@@ -32,15 +35,15 @@ const queues = {}; // Object to hold queues for each booth
 |
 */
 
-io.engine.generateId = req => {
-    const query = require('url').parse(req.url, true).query
-    const prevId = query['socketId']
-    // prevId is either a valid id or an empty string
-    if (prevId) {
-        return prevId
-    }
-    return base64id.generateId()
-}
+io.engine.generateId = (req) => {
+  const query = require("url").parse(req.url, true).query;
+  const prevId = query["socketId"];
+  // prevId is either a valid id or an empty string
+  if (prevId) {
+    return prevId;
+  }
+  return base64id.generateId();
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -60,35 +63,35 @@ const userToBoothMap = new Map();
 const userConnections = new Map();
 
 //methods
-    /**
-     * ALL queues LENGTH 
-     * @param {}
-     * @return {Array[ {'booth Id: 'length'}]}
-     */
-    function getAllQueuesLength(){
-        const queueLengths = Object.entries(queues).map(([boothId, userQueue]) => {
-            return { boothId, length: userQueue.length };
-        });
-        return queueLengths || [];
-    }
+/**
+ * ALL queues LENGTH
+ * @param {}
+ * @return {Array[ {'booth Id: 'length'}]}
+ */
+function getAllQueuesLength() {
+  const queueLengths = Object.entries(queues).map(([boothId, userQueue]) => {
+    return { boothId, length: userQueue.length };
+  });
+  return queueLengths || [];
+}
 
 //----------------------------------------------------------------    
 io.use(function (socket, next) {
-    console.log('someone is trying to connect...')
-    console.log('here is his socket.id: ', socket.id);
-    const query = socket.handshake.query
-    console.log('query: ', query , "query.userId: ", query.userId);
-    const { userId, boothId , role } = query
-    socket.decoded = { userId, boothId , role};
+  console.log("someone is trying to connect...");
+  console.log("here is his socket.id: ", socket.id);
+  const query = socket.handshake.query;
+  console.log("query: ", query, "query.userId: ", query.userId);
+  const { userId, boothId, role } = query;
+  socket.decoded = { userId, boothId, role };
 
-    next();
+  next();
 })
-.on('connect', (socket) => {
-    console.log('A user connected');
+  .on("connect", (socket) => {
+    console.log("A user connected");
     (async () => {
-        await userHelper.updateUser(socket.decoded.userId, { status: true });
+      await userHelper.updateUser(socket.decoded.userId, { status: true });
     })();
-   
+
     // socket.on('enterQueue', ({ boothId, userId, username }) => {
     //     const user = { userId, username, socketId: socket.id, next: null, prev: null };
 
@@ -112,11 +115,11 @@ io.use(function (socket, next) {
     //     });
     // });
 
-    socket.on('enterQueue', ({ username, role }) => {
-        console.log(' username: ', username , ' role: ', role);
-        console.log('socket.decoded.userId', socket.decoded.userId);
-        const { userId,  boothId } = socket.decoded
-        console.log('boothId,: ', boothId, ' userId: ', userId)
+    socket.on("enterQueue", ({ username, role }) => {
+      console.log(" username: ", username, " role: ", role);
+      console.log("socket.decoded.userId", socket.decoded.userId);
+      const { userId, boothId } = socket.decoded;
+      console.log("boothId,: ", boothId, " userId: ", userId);
 
         if( !userId ||  !boothId){
             io.emit('error'," either userId is missing  or boothId");
@@ -147,14 +150,14 @@ io.use(function (socket, next) {
       console.log('queues: ', queues);
       io.emit('queueUpdated', { boothId, queue: queues[boothId] });
     });
-  
-    socket.on('leaveQueue', () => {
-        console.log('socket.decoded.userId', socket.decoded.userId);
-        const { userId,  boothId } = socket.decoded
-        if( !userId ||  !boothId){
-            io.emit('error'," either userId is missing  or boothId");
-            return;
-        }
+
+    socket.on("leaveQueue", () => {
+      console.log("socket.decoded.userId", socket.decoded.userId);
+      const { userId, boothId } = socket.decoded;
+      if (!userId || !boothId) {
+        io.emit("error", " either userId is missing  or boothId");
+        return;
+      }
       if (queues[boothId]) {
         queues[boothId] = queues[boothId].queue.filter((user) =>{
             console.log('item => ', user);
@@ -165,33 +168,47 @@ io.use(function (socket, next) {
       }
     });
 
-
-
-    socket.on('getQueueLengths', () => {
-        // Emit back to the requester
-        socket.emit('queueLengths', getAllQueuesLength());
+    socket.on("getQueueLengths", () => {
+      // Emit back to the requester
+      socket.emit("queueLengths", getAllQueuesLength());
     });
 
-
     /**
-     * get all User location from the DB and through the 
+     * get all User location from the DB and through the
      * @pram  [{userId ,username , location }, ...{}]
      * @description u can say find() all keys $projection {userId, username ,location}
      */
-    socket.on('getAllUser', async () =>{
-        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection({status: true},['userId', 'userName', 'location']))
+    socket.on("getAllUser", async () => {
+      io.emit(
+        "getAllUserDetails",
+        await userHelper.getUsersBySpecificProjection({ status: true }, [
+          "userId",
+          "userName",
+          "location",
+        ])
+      );
     });
 
-    socket.on('updateUserLocation' , async ({ location}) =>{
-        console.log('socket.decoded.userId', socket.decoded.userId);
-        const { userId } = socket.decoded
-        if( !userId ){
-            io.emit('error'," userId is missing while connecting to server");
-            return;
-        }
-        const updateUser = await userHelper.updateUser(userId, {location: location});
-        console.log('updateUser: ',updateUser);
-        io.emit('getAllUserDetails', await userHelper.getUsersBySpecificProjection({status: true},['userId', 'userName', 'location']))
+    socket.on("updateUserLocation", async ({ location }) => {
+      console.log("socket.decoded.userId", socket.decoded.userId);
+      console.log("location==>", location);
+      const { userId } = socket.decoded;
+      if (!userId) {
+        io.emit("error", " userId is missing while connecting to server");
+        return;
+      }
+      const updateUser = await userHelper.updateUser(userId, {
+        location: location,
+      });
+      console.log("updateUser: ", updateUser);
+      io.emit(
+        "getAllUserDetails",
+        await userHelper.getUsersBySpecificProjection({ status: true }, [
+          "userId",
+          "userName",
+          "location",
+        ])
+      );
     });
 
     socket.on('disconnect', async () =>{
@@ -210,63 +227,66 @@ io.use(function (socket, next) {
         }
         
     });
-})
-.on('error', (err) => { 
-    console.log('error: ', err); 
-});
+  })
+  .on("error", (err) => {
+    console.log("error: ", err);
+  });
 
 function addUserToQueue(boothId, user) {
-    const queue = queues[boothId];
-    if (!queue.head) {
-        queue.head = queue.tail = user;
-    } else {
-        queue.tail.next = user;
-        user.prev = queue.tail;
-        queue.tail = user;
-    }
-    userToBoothMap.set(user.userId, boothId);
+  const queue = queues[boothId];
+  if (!queue.head) {
+    queue.head = queue.tail = user;
+  } else {
+    queue.tail.next = user;
+    user.prev = queue.tail;
+    queue.tail = user;
+  }
+  userToBoothMap.set(user.userId, boothId);
 }
 
 function removeUserFromQueue(boothId, userId) {
-    const queue = queues[boothId];
-    let currentUser = queue.head;
-    while (currentUser) {
-        if (currentUser.userId === userId) {
-            if (currentUser.prev) currentUser.prev.next = currentUser.next;
-            if (currentUser.next) currentUser.next.prev = currentUser.prev;
-            if (queue.head === currentUser) queue.head = currentUser.next;
-            if (queue.tail === currentUser) queue.tail = currentUser.prev;
-            userToBoothMap.delete(userId);
-            break;
-        }
-        currentUser = currentUser.next;
+  const queue = queues[boothId];
+  let currentUser = queue.head;
+  while (currentUser) {
+    if (currentUser.userId === userId) {
+      if (currentUser.prev) currentUser.prev.next = currentUser.next;
+      if (currentUser.next) currentUser.next.prev = currentUser.prev;
+      if (queue.head === currentUser) queue.head = currentUser.next;
+      if (queue.tail === currentUser) queue.tail = currentUser.prev;
+      userToBoothMap.delete(userId);
+      break;
     }
+    currentUser = currentUser.next;
+  }
 }
 
 function notifyNeighbors(boothId, userId) {
-    const user = findUserInQueue(boothId, userId);
-    if (!user) return;
+  const user = findUserInQueue(boothId, userId);
+  if (!user) return;
 
-    const nextUser = user.next ? userConnections.get(user.next.userId) : null;
-    const prevUser = user.prev ? userConnections.get(user.prev.userId) : null;
+  const nextUser = user.next ? userConnections.get(user.next.userId) : null;
+  const prevUser = user.prev ? userConnections.get(user.prev.userId) : null;
 
-    if (nextUser) {
-        nextUser.emit('updateNeighbor', { prevUsername: user.prev ? user.prev.username : null });
-    }
+  if (nextUser) {
+    nextUser.emit("updateNeighbor", {
+      prevUsername: user.prev ? user.prev.username : null,
+    });
+  }
 
-    if (prevUser) {
-        prevUser.emit('updateNeighbor', { nextUsername: user.next ? user.next.username : null });
-    }
+  if (prevUser) {
+    prevUser.emit("updateNeighbor", {
+      nextUsername: user.next ? user.next.username : null,
+    });
+  }
 }
 
 function findUserInQueue(boothId, userId) {
-    let currentUser = queues[boothId].head;
-    while (currentUser) {
-        if (currentUser.userId === userId) {
-            return currentUser;
-        }
-        currentUser = currentUser.next;
+  let currentUser = queues[boothId].head;
+  while (currentUser) {
+    if (currentUser.userId === userId) {
+      return currentUser;
     }
-    return null;
+    currentUser = currentUser.next;
+  }
+  return null;
 }
-
