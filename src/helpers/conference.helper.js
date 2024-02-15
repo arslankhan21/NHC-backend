@@ -10,6 +10,24 @@ const createConference = async (conferenceDetails) => {
   }
 };
 
+const filterConferences = async (filter, projection) => {
+  try{
+    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
+
+    // Dynamically constructing the findQuery based on filter object
+    let findQuery = Object.keys(filter).reduce((acc, key) => {
+      if (filter[key]) {
+        acc[key] = { $regex: new RegExp(filter[key], 'i') };
+      }
+      return acc;
+    }, {});
+    return await Conference.find(findQuery ,projectionFields)
+  }
+  catch (error) {
+    console.log(`Failed to filter conference: ${error.message}`);
+  }
+}
+
 const getConferenceById = async (id) => {
   try {
     const conference = await Conference.findById(id);
@@ -27,9 +45,29 @@ const getConferenceById = async (id) => {
   }
 };
 
-const getAllConferences = async () => {
+const getAllConferences = async (filter={} , projection=[]) => {
   try {
-    const conferences = await Conference.find();
+    let findQuery = filter
+    // Dynamically constructing the findQuery based on filter object
+    if (Object.keys(filter).length !== 0) {
+      console.log("getAllConferences -> filters: ",filter)
+      findQuery = Object.keys(filter).reduce((acc, key) => {
+        if (filter[key]) {
+          acc[key] = { $regex: new RegExp(filter[key], 'i') };
+        }
+        return acc;
+      }, {});
+    }
+
+    // Constructing the projection fields
+    let projectionFields = {};
+    if (projection.length !== 0) {
+      projectionFields = projection.reduce((acc, field) => {
+        acc[field] = 1;
+        return acc;
+      }, {});
+    }
+    const conferences = await Conference.find(findQuery,projectionFields);
     return conferences;
   } catch (error) {
     throw new Error(`Failed to get conferences: ${error.message}`);
@@ -62,4 +100,5 @@ module.exports = {
   getAllConferences,
   updateConference,
   deleteConference,
+  filterConferences
 };

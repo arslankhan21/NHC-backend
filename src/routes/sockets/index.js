@@ -3,6 +3,7 @@
 const { generateRandomId } = require('../../utils/helperFunctions')
 const base64id = require('base64id')
 const userHelper = require('../../helpers/user.helper')
+const boothHelper = require('../../helpers/booth.helper')
 
 
 
@@ -71,6 +72,7 @@ const userConnections = new Map();
         return queueLengths || [];
     }
 
+//----------------------------------------------------------------    
 io.use(function (socket, next) {
     console.log('someone is trying to connect...')
     console.log('here is his socket.id: ', socket.id);
@@ -120,8 +122,8 @@ io.use(function (socket, next) {
             io.emit('error'," either userId is missing  or boothId");
             return;
         }
-      if (!queues[boothId]) queues[boothId] = [];
-        const index =queues[boothId].findIndex((user) =>{
+      if (!queues[boothId]) queues[boothId] = { representative: {} , queue: [] };
+        const index = queues[boothId].queue.findIndex((user) =>{
             console.log('filter: ',user)
            return user.userId === userId
         } )
@@ -129,12 +131,17 @@ io.use(function (socket, next) {
       if(index != -1){
         
         //that user already exist in the queue
-        queues[boothId][index].username = username
-        queues[boothId][index].role = role
+        // queues[boothId][index].queue.username = username
+        // role ==="UserPlayer" ? queues[boothId][index].queue.role = role : null
 
       }
       else{
-        role !=="representative" ? queues[boothId].push({userId , username , role}) : null
+            if (role =="UserPlayer"){
+                queues[boothId].queue.push({userId , username , role});
+            }
+            else {
+                queues[boothId].representative = {userId , username , role};
+            }
         console.log('queues[boothId]: ', queues[boothId]);
       }
       console.log('queues: ', queues);
@@ -149,7 +156,7 @@ io.use(function (socket, next) {
             return;
         }
       if (queues[boothId]) {
-        queues[boothId] = queues[boothId].filter((user) =>{
+        queues[boothId] = queues[boothId].queue.filter((user) =>{
             console.log('item => ', user);
            return  user.userId !== userId
         } );
@@ -189,7 +196,14 @@ io.use(function (socket, next) {
 
     socket.on('disconnect', async () =>{
         if(socket.decoded.userId){
-            await userHelper.updateUser(socket.decoded.userId, { status: false })
+            //soft- delete from the socket
+            console.log("disconnect -> socket.decoded",socket.decoded)
+            if(socket.decoded.role === "BoothRepresentativePlayer"){
+                await boothHelper.updateBooth(socket.decoded.boothId, {availabilityStatus: false})
+            }
+            else{
+                await userHelper.updateUser(socket.decoded.userId, { status: false })
+            }
         }
         else{
             console.log("User ID not found")

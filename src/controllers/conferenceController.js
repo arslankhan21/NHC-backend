@@ -34,7 +34,15 @@ const getConferenceById = async (req, res) => {
 
 const getAllConferences = async (req, res) => {
   try {
-    const conferences = await conferenceHelper.getAllConferences();
+    const query =  req.query;
+    let conferences={};
+    console.log("query: ", query);
+    if(query){
+      conferences = await conferenceHelper.getAllConferences(query);
+    }
+    else{
+      conferences = await conferenceHelper.getAllConferences();
+    }
     return responseSuccess(res, conferences);
   } catch (error) {
     if (ERRORS[error.message]) {

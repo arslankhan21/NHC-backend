@@ -34,10 +34,20 @@ const getBoothByID = async (req, res) => {
 
 const getBooths = async (req, res) => {
   try {
-    const booth = await boothHelper.getBooths();
+    console.log("getBooths")
+    const query = req.query;
+    console.log("query: ", query);
+    let booth={}
+    if(query){
+      booth = await boothHelper.getBooths(query);
+    }
+    else{
+      booth = await boothHelper.getBooths();
+    }
     console.log(booth, "<==booth");
     return responseSuccess(res, booth);
   } catch (error) {
+    console.log("error: ",error)
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
     }

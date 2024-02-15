@@ -34,12 +34,55 @@ const getBoothByID = async (boothId) => {
     throw new Error(`Failed to get booth details by this id: ${error.message}`);
   }
 };
+const filterBooths = async (filter, projection) => {
+  try{
+    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
 
-const getBooths = async () => {
+    // Dynamically constructing the findQuery based on filter object
+    let findQuery = Object.keys(filter).reduce((acc, key) => {
+      if (filter[key]) {
+        acc[key] = { $regex: new RegExp(filter[key], 'i') };
+      }
+      return acc;
+    }, {});
+    return await boothSchema.find(findQuery ,projectionFields)
+  }
+  catch (error) {
+    console.log(`Failed to filter booths: ${error.message}`);
+  }
+}
+const getBooths = async (filter={}, projection=[]) => {
   try {
-    let query = boothSchema.find().exec();
+    let findQuery = filter
+    // Dynamically constructing the findQuery based on filter object
+    if (Object.keys(filter).length !== 0) {
+      findQuery = Object.keys(filter).reduce((acc, key) => {
+        if (filter[key]) {
+          if(key === "availabilityStatus"){
+            acc[key] = filter[key];
+          }
+          else{
+            acc[key] = { $regex: new RegExp(filter[key], 'i') };
+          }
+          
+        }
+        return acc;
+      }, {});
+    }
+
+    // Constructing the projection fields
+    let projectionFields = {};
+    if (projection.length !== 0) {
+      projectionFields = projection.reduce((acc, field) => {
+        acc[field] = 1;
+        return acc;
+      }, {});
+    }
+
+    let query = boothSchema.find(findQuery,projectionFields).exec();
     return query;
   } catch (error) {
+    console.log("heerere error");
     throw new Error(`Failed to get all booth details: ${error.message}`);
   }
 };
@@ -87,4 +130,5 @@ module.exports = {
   getBooths,
   updateBooth,
   deleteBooth,
+  filterBooths,
 };

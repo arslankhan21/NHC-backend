@@ -32,9 +32,35 @@ const getUserByID = async (userId) => {
   }
 };
 
-const getUsers = async () => {
+const getUsers = async (filter={}, projection=[]) => {
   try {
-    let query = userSchema.find().exec();
+    let findQuery = filter
+    // Dynamically constructing the findQuery based on filter object
+    if (Object.keys(filter).length !== 0) {
+      findQuery = Object.keys(filter).reduce((acc, key) => {
+        if (filter[key]) {
+          if(key === "status" ) {
+            acc[key] = filter[key];
+          }
+          else{
+            acc[key] = { $regex: new RegExp(filter[key], 'i') };
+          }
+
+        }
+        return acc;
+      }, {});
+    }
+
+    // Constructing the projection fields
+    let projectionFields = {};
+    if (projection.length !== 0) {
+      projectionFields = projection.reduce((acc, field) => {
+        acc[field] = 1;
+        return acc;
+      }, {});
+    }
+
+    let query = userSchema.find(findQuery ,projectionFields).exec();
     return query;
   } catch (error) {
     throw new Error(`Failed to get all user details: ${error.message}`);
@@ -68,6 +94,24 @@ const updateUser = async (userId, updation) => {
   }
 };
 
+const filterUsers = async () => {
+  try{
+    let findQuery = {};
+    const { status , role} = filter;
+    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
+    if( status !== undefined ){
+      findQuery.status = { $regex: new RegExp(status, 'i') }
+    }
+    if( role ){
+      findQuery.role = { $regex: new RegExp(role, 'i') }
+    }
+    return await userSchema.find(findQuery ,projectionFields)
+  }
+  catch(err){
+    console.log("error: ", err)
+  };
+};
+
 const deleteUser = async (userId) => {
   try {
     return await userSchema.findOneAndDelete({ userId: userId }).exec();
@@ -93,5 +137,6 @@ module.exports = {
   getUsers,
   updateUser,
   deleteUser,
-  getUsersBySpecificProjection
+  getUsersBySpecificProjection,
+  filterUsers
 };
