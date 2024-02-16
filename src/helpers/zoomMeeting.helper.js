@@ -10,9 +10,9 @@ const createMeeting = async (userId,auth) => {
         alternative_hosts_email_notification: true,
         approval_type: 2,
         approved_or_denied_countries_or_regions: {
-          approved_list: ["PK"],
-          denied_list: ["CA"],
-          enable: true,
+          approved_list: [],
+          denied_list: [],
+          enable: false,
           method: "approve",
         },
         audio_conference_info: "test",
