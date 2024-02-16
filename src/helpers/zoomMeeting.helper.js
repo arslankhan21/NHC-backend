@@ -1,4 +1,5 @@
 const helperFunctions = require('../utils/helperFunctions');
+const ERRORS = require('../utils/errorTypes');
 
 const createMeeting = async (userId) => {
   try {
@@ -77,6 +78,7 @@ const createMeeting = async (userId) => {
     return userResponse?.data
   } catch (error) {
     console.log(`Failed to get user details: ${error.message}`);
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   }
 };
 
@@ -96,6 +98,7 @@ const userMeetings = async (userId , auth ) => {
   }
   catch (error) {
     console.log("error: ",error)
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   };
 }
 
@@ -115,6 +118,7 @@ const getMeeting = async (meetingId , auth ) => {
   }
   catch (error) {
     console.log("error: ",error)
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   }
 }
 

@@ -6,6 +6,10 @@ const RESPONSE_ERRORS = {
     MESSAGE: "Something went wrong",
     STATUS: 500,
   },
+  ZOOM_AXIOS_ERROR: {
+    CODE: "ZOOM_AXIOS_ERROR",
+    MESSAGE: "ZOOM API failed",
+  },
   BAD_REQUEST: {
     CODE: "BAD_REQUEST",
     MESSAGE: "Invalid request",

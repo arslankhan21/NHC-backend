@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const axios = require("axios");
 const config = require("../config")
 const { NOTIFICATION_REMOTE_PLAYER_JOINED_QUEST } = require('../constants')
+const ERRORS = require('../utils/errorTypes');
 
 const axiosInstance = axios.create({
     baseURL: config.ZOOM_OAUTH_BASE_URL,
@@ -32,7 +33,7 @@ const getToken = async () => {
         console.log("response.data: ", response.data);
         return response.data;
     } catch (error) {
-        throw new Error(`Failed to get token: ${error.message}`);
+        throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
     }
 };
 
@@ -45,7 +46,8 @@ const getApiCall = async (url , headers) => {
             );
     }
     catch (error) {
-        throw new Error(error);
+        console.log("error: ", error);
+        throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
     };
 };
 
@@ -60,7 +62,7 @@ const postApiCall = async (url , body, headers) => {
     }
     catch (error) {
         console.log("postApiCall -> error: ",error)
-        throw new Error(error);
+        throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
     };
 };
 
