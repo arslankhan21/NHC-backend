@@ -14,6 +14,10 @@ const {
       return responseSuccess(res, { ...data });
     } catch (error) {
       console.log("error: ", error);
+      console.log("error.code: ",error.code , " error: ", {...error})
+      if (error) {
+        return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+      }
     }
   };
 
@@ -25,7 +29,10 @@ const {
       const data = await zoomUserHelper.getZoomUserById(userId , auth);
       return responseSuccess(res, { ...data });
     } catch (error) {
-      throw new Error(error.message);
+      console.log("error.code: ",error.code , " error: ", {...error})
+      if (error) {
+        return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+      }
     }
   };
 
@@ -43,7 +50,10 @@ const {
       return responseSuccess(res, { ...createdUser });
     } catch (error) {
       console.log("createZoomUser -> zoomUserController -> error: ", error);
-      throw new Error(error);
+      console.log("error.code: ",error.code , " error: ", {...error})
+      if (error) {
+        return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+      }
     }
   };
 
@@ -56,10 +66,10 @@ const {
     }
     catch(error){
       console.log(error);
-      if (ERRORS[error.message]) {
-        return responseBadRequest(res, ERRORS[error.message]);
+      console.log("error.code: ",error.code , " error: ", {...error})
+      if (error) {
+        return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
       }
-      return responseServerSideError(res, error);
     };
   };
 
@@ -72,7 +82,10 @@ const {
     } 
     catch (error) {
       console.log("error: " , error)
-      throw new Error(error);
+      console.log("error.code: ",error.code , " error: ", {...error})
+      if (error) {
+        return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+      }
     };
   };
 

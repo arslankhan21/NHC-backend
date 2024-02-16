@@ -1,4 +1,5 @@
 const helperFunctions = require('../utils/helperFunctions');
+const ERRORS = require('../utils/errorTypes');
 
 /**
  * Fetches details of the current user from the Zoom API.
@@ -25,7 +26,7 @@ const getMe = async (auth) => {
 
     return userResponse.data;
   } catch (error) {
-    throw new Error(`Failed to get user details: ${error.message}`);
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   }
 };
 
@@ -54,8 +55,9 @@ const getZoomUserById = async (userId , auth) => {
     // Return the user details obtained from the API response
     return userResponse.data;
   } catch (error) {
+    console.log("error: ", error);
     // If an error occurs during the API call, throw an error with a descriptive message
-    throw new Error(`Failed to get user details: ${error.message}`);
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   }
 };
 
@@ -108,8 +110,8 @@ const createZoomUser = async (email, first_name, last_name, password ,auth ) => 
     console.log("zoom API resposne: ", userResponse)
     return userResponse?.data;
   } catch (error) {
-      console.log("Error: ", error.message);
-    throw new Error(`Failed to get user details: ${error.message}`);
+    console.log("Error: ", error.message);
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   }
 };
 
@@ -127,6 +129,7 @@ const deleteZoomUser = async (userId , auth) => {
   }
   catch(error){
     console.log("Error: ",error);
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   }
 }
 
@@ -156,7 +159,7 @@ const getUsers = async (auth) => {
   }
   catch (error) {
     console.log("Error: " , error);
-    throw new Error(`Failed to get users: ${error.message}`);
+    throw new Error(ERRORS.ZOOM_AXIOS_ERROR);
   };
 }
 
