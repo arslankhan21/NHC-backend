@@ -75,6 +75,7 @@ io.use(function (socket, next) {
   console.log("someone is trying to connect...");
   console.log("here is his socket.id: ", socket.id);
   const query = socket.handshake.query;
+  console.log("socket.handshake: ", socket.handshake.headers);
   console.log("query: ", query, "query.userId: ", query.userId);
   const { userId, boothId, role } = query;
   socket.decoded = { userId, boothId, role };
