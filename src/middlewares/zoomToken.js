@@ -2,6 +2,15 @@ const adminHelper = require('../helpers/admin.helper');
 const helperFunctions = require('../utils/helperFunctions');
 const { responseUnauthorized } = require('../utils/responseTypes')
 
+function isGreaterThan58MinutesAgo(updatedAt) {
+    const updatedAtTime = new Date(updatedAt);
+    const currentTime = new Date();
+    const differenceInMilliseconds = currentTime - updatedAtTime;
+    const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+    console.log("isGreaterThan58MinutesAgo -> return : ",differenceInMinutes >= 58)
+    return differenceInMinutes >= 58;
+  }
+
 const validateZoomOAuthToken = async (req, res, next) =>{
     try{
         const admin = await adminHelper.getOneAdmin({})
@@ -15,7 +24,17 @@ const validateZoomOAuthToken = async (req, res, next) =>{
                 next();
             }
             else{
-              req.auth = admin.token
+
+                if(isGreaterThan58MinutesAgo(admin.updatedAt)){
+
+                    const response = await helperFunctions.getToken();
+                    const newAdmin = await adminHelper.updateAdmin({},{ token:response.access_token})
+                    req.auth = newAdmin.token
+                }
+                else{
+                    console.log("admin.token: ", admin.token)
+                    req.auth = admin.token
+                }
               next();  
             }
         }
