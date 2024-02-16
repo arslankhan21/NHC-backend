@@ -16,6 +16,9 @@ const createMeeting = async (req, res) => {
     return responseSuccess(res, { ...creatingMeeting });
   } catch (error) {
     console.log("createUser -> userController -> error: ", error);
+    if (error) {
+      return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+    }
   }
 };
 
@@ -29,6 +32,9 @@ const listOfUserMeetings = async (req, res) => {
   }
   catch(error){
     console.log("listOfUserMeetings -> zoomUserController -> error: ", error);
+    if (error) {
+      return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+    }
   }
 };
 
@@ -41,6 +47,9 @@ const getOneMeeting = async (req, res) => {
   }
   catch(error){
     console.log("getOneMeeting -> zoomUserController -> error: ", error);
+    if (error) {
+      return responseBadRequest(res, ERRORS.ZOOM_AXIOS_ERROR)
+    }
   };
 }
 
