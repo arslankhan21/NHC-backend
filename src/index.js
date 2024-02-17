@@ -58,6 +58,8 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
+// For sockets
+require("./routes/sockets");
 
 // Start the server
 server.listen(PORT, () => {
