@@ -50,6 +50,7 @@ app.use("/api", routes);
 
 // Socket.IO connection handler
 io.on("connection", (socket) => {
+  console.log(socket, "<==socket");
   console.log("A user connected", socket.id);
 
   // Handle socket events here
