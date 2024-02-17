@@ -17,8 +17,8 @@ const server = http.createServer(app);
 // Configure Socket.IO with CORS
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://staging.nhc.narsunprojects.com", // Use the FRONTEND_URL from your config
-    methods: ["GET", "POST"],
+    origin: "*", // Allows requests from all origins
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // This is important for sessions or when using cookies
   },
   path: "/socket.io", // Keep the custom Socket.IO path
@@ -37,7 +37,7 @@ app.use(upload.single("file"));
 // CORS configuration for Express to accept requests from FRONTEND_URL
 app.use(
   cors({
-    origin: "https://staging.nhc.narsunprojects.com", // Allow your frontend URL
+    origin: "*", // Allows requests from all origins
     credentials: true, // This is important for sessions or when using cookies
   })
 );
