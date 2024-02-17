@@ -2,21 +2,30 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
-const cronJob = require('./cronjobs')
-// connect with db
+const { PORT } = require("./config"); // Ensure FRONTEND_URL is configured in your config file
+const routes = require("./routes");
+const http = require("http");
+
+// Assuming FRONTEND_URL is something like "https://staging.nhc.narsunprojects.com"
+// Connect with the database
 require("./db");
 
-const { PORT } = require("./config");
-const routes = require("./routes");
-
-//Sever config
+// Server configuration
 const app = express();
-const http = require("http").Server(app);
-global.io = require("socket.io")(http, { path: "/socket.io" });
+const server = http.createServer(app);
 
-app.get("/", (req, res) => {
-  res.send("Queue System Server");
+// Configure Socket.IO with CORS
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "https://staging.nhc.narsunprojects.com", // Use the FRONTEND_URL from your config
+    methods: ["GET", "POST"],
+    credentials: true, // This is important for sessions or when using cookies
+  },
+  path: "/socket.io", // Keep the custom Socket.IO path
 });
+
+// Attach io to the app object
+global.io = io;
 
 // Multer configuration
 const storage = multer.memoryStorage();
@@ -25,17 +34,31 @@ const upload = multer({ storage: storage });
 // Middleware for handling FormData
 app.use(upload.single("file"));
 
-app.use(cors());
+// CORS configuration for Express to accept requests from FRONTEND_URL
+app.use(
+  cors({
+    origin: "https://staging.nhc.narsunprojects.com", // Allow your frontend URL
+    credentials: true, // This is important for sessions or when using cookies
+  })
+);
 
-// for parsing application/json
+// For parsing application/json
 app.use(bodyParser.json());
 
-// For backend APIs
+// Backend APIs
 app.use("/api", routes);
 
-// For sockets
-require("./routes/sockets");
+// Socket.IO connection handler
+io.on("connection", (socket) => {
+  console.log("A user connected", socket.id);
 
-http.listen(PORT, () => {
+  // Handle socket events here
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
+
+// Start the server
+server.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
 });
