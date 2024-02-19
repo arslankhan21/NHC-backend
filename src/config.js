@@ -20,6 +20,11 @@ const config = {
   SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
   S3_PROFILE_BUCKET: process.env.S3_PROFILE_BUCKET,
   REGION: process.env.REGION,
+  //PUBNUB
+  PUBNUB_PUBLISH_KEY:process.env.PUBNUB_PUBLISH_KEY,
+  PUBNUB_SUBSCRIBE_KEY:process.env.PUBNUB_SUBSCRIBE_KEY,
+  PUBNUB_SECRET_KEY:process.env.PUBNUB_SECRET_KEY,
+  PUBNUB_USER_ID:process.env.PUBNUB_USER_ID,
   //ZOOM credentials
   ZOOM_OAUTH_BASE_URL:
     process.env.ZOOM_OAUTH_BASE_URL || "https://zoom.us/oauth",

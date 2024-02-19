@@ -60,6 +60,7 @@ io.on("connection", (socket) => {
 });
 // For sockets
 require("./routes/sockets");
+require("./routes/pubNub");
 
 // Start the server
 server.listen(PORT, () => {
