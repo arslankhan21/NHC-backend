@@ -17,16 +17,18 @@ const getAnalyticsBySearch = async (options, bySearch) => {
       options.pagination = true;
     }
 
-    if (bySearch.userId) {
-      query.userId = String(bySearch.userId);
-      delete bySearch.userId;
+    if (bySearch._id) {
+      query._id = String(bySearch._id);
+      delete bySearch._id;
     }
 
-    for (const [key, value] of Object.entries(bySearch)) {
-      if (value !== undefined && value !== "") {
-        query[`data.${key}`] = value;
-      } else {
-        query[`data.${key}`] = { $exists: true };
+    if (bySearch) {
+      for (const [key, value] of Object.entries(bySearch)) {
+        if (value !== undefined && value !== "") {
+          query[`data.${key}`] = { $regex: new RegExp(value, "i") };
+        } else {
+          query[`data.${key}`] = { $exists: true };
+        }
       }
     }
 

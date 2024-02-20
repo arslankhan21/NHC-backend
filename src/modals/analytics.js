@@ -3,9 +3,6 @@ const { Schema } = mongoose;
 
 const AnalyticsModel = new Schema(
   {
-    userId: {
-      type: String,
-    },
     data: {
       type: Schema.Types.Mixed,
       required: true,
@@ -13,7 +10,7 @@ const AnalyticsModel = new Schema(
   },
   {
     timestamps: true,
-    strict: false,
+    strict: true,
   }
 );
 

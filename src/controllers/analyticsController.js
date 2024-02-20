@@ -25,7 +25,7 @@ const getAnalyticsBySearch = async (req, res) => {
       { page, limit },
       { ...query }
     );
-    return responseSuccess(res, { ...analytics });
+    return responseSuccess(res, analytics);
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
