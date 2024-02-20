@@ -4,7 +4,7 @@ const {
   responseServerSideError,
 } = require("../utils/responseTypes");
 const ERRORS = require("../utils/errorTypes");
-const { uploadImageToS3 } = require("../helpers/upload.helper");
+const { uploadFileToS3 } = require("../helpers/upload.helper");
 
 const uploadImage = async (req, res) => {
   try {
@@ -12,7 +12,7 @@ const uploadImage = async (req, res) => {
     const file = req.file;
 
     // Upload picture to S3 bucket and update user details
-    const imageLink = await uploadImageToS3(file);
+    const imageLink = await uploadFileToS3(file);
 
     return responseSuccess(res, { imageLink });
   } catch (error) {
