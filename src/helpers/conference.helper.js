@@ -53,7 +53,13 @@ const getAllConferences = async (filter={} , projection=[]) => {
       console.log("getAllConferences -> filters: ",filter)
       findQuery = Object.keys(filter).reduce((acc, key) => {
         if (filter[key]) {
-          acc[key] = { $regex: new RegExp(filter[key], 'i') };
+          if(key === "_id"){
+            acc[key] = filter[key];
+          }
+          else{
+            acc[key] = { $regex: new RegExp(filter[key], 'i') };
+          }
+          
         }
         return acc;
       }, {});

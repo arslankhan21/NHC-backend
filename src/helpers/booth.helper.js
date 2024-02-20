@@ -58,7 +58,7 @@ const getBooths = async (filter={}, projection=[]) => {
     if (Object.keys(filter).length !== 0) {
       findQuery = Object.keys(filter).reduce((acc, key) => {
         if (filter[key]) {
-          if(key === "availabilityStatus"){
+          if(key === "availabilityStatus" || key === "_id"){
             acc[key] = filter[key];
           }
           else{
