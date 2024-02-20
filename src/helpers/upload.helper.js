@@ -20,14 +20,21 @@ AWS.config.update({
 });
 const s3 = new AWS.S3();
 
-// Async function to upload an image file to Amazon S3 bucket
-const uploadImageToS3 = async (file) => {
+const uploadFileToS3 = async (file) => {
   console.log(file);
   try {
-    // const imageBuffer = Buffer.from(await imageBlob.arrayBuffer());
+    // Generate a unique file name suffix
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const key = `images/${uniqueSuffix}-${file.originalname}`;
-
+    // Determine the directory based on the MIME type
+    let directory = "files"; // Default directory
+    if (file.mimetype.startsWith("image/")) {
+      directory = "images";
+    } else if (file.mimetype === "application/pdf") {
+      directory = "pdfs";
+    }
+    // Construct the S3 key with the directory and unique file name
+    const key = `${directory}/${uniqueSuffix}-${file.originalname}`;
+    console.log(key, "<==key");
     const params = {
       Bucket: S3_PROFILE_BUCKET,
       Key: key,
@@ -37,14 +44,14 @@ const uploadImageToS3 = async (file) => {
     };
     // Use the AWS SDK to upload the file to the specified S3 bucket
     const data = await s3.upload(params).promise();
-    // Return the URL of the uploaded image for public access
+    // Return the URL of the uploaded file for public access
     return data.Location;
   } catch (error) {
-    console.error("Error uploading image to S3:", error);
+    console.error("Error uploading file to S3:", error);
     throw new Error(ERRORS.S3_UPLOAD_FAILED.CODE);
   }
 };
 
 module.exports = {
-  uploadImageToS3,
+  uploadFileToS3,
 };
