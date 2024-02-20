@@ -17,6 +17,10 @@ const BoothModel = new Schema(
       type: String,
       required: true,
     },
+    brochures: {
+      type: [String], // Array of strings for picture URLs
+      default: [], // Array of strings for picture URLs
+    },
     // Adding location field
     availabilityStatus: {
       type: Boolean, // Define as an array of numbers
