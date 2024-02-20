@@ -209,7 +209,7 @@ io.use(function (socket, next) {
      * @pram  [{userId ,username , location }, ...{}]
      * @description u can say find() all keys $projection {userId, username ,location}
      */
-    socket.on("getAllUser", async (query) => {
+    socket.on("getAllUser", async (query={}) => {
       console.log("query: ", query);
       const { floor } = query
       const filter = { status: true }
