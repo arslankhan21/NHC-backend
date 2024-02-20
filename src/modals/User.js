@@ -28,6 +28,7 @@ const UserModel = new Schema(
         position: Schema.Types.Mixed, // Allow any type for position
         rotation: Schema.Types.Mixed, // Allow any type for rotation
         state: { type: String, default: "idle" },
+        floor: { type: String },
         _id: false
       }
       // type: [Number], // Define as an array of numbers

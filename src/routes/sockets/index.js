@@ -65,7 +65,8 @@ const userConnections = new Map();
  */
 function getAllQueuesLength() {
   const queueLengths = Object.entries(queues).map(([boothId, userQueue]) => {
-    return { boothId, length: userQueue.length };
+
+    return { boothId, length: userQueue?.queue.length };
   });
   return queueLengths || [];
 }
@@ -77,8 +78,8 @@ io.use(function (socket, next) {
   const query = socket.handshake.query;
   console.log("socket.handshake: ", socket.handshake.headers);
   console.log("query: ", query, "query.userId: ", query.userId);
-  const { userId, boothId, role } = query;
-  socket.decoded = { userId, boothId, role };
+  const { userId, role } = query;
+  socket.decoded = { userId, role };
 
   next();
 })
@@ -111,18 +112,20 @@ io.use(function (socket, next) {
     //     });
     // });
 
-    socket.on("enterQueue", ({ username, role }) => {
-      console.log(" username: ", username, " role: ", role);
+    socket.on("enterQueue", ({ boothId, username }) => {
+      console.log(" username: ", username, );
       console.log("socket.decoded.userId", socket.decoded.userId);
-      const { userId, boothId } = socket.decoded;
+      const { userId ,role } = socket.decoded;
       console.log("boothId,: ", boothId, " userId: ", userId);
 
-        if( !userId ||  !boothId){
+        if( !userId || !boothId){
             io.emit('error'," either userId is missing  or boothId");
             return;
         }
-      if (!queues[boothId]) queues[boothId] = { representative: {} , queue: [] };
-        const index = queues[boothId].queue.findIndex((user) =>{
+      if (!queues[boothId]){ 
+        queues[boothId] = { representative: {} , queue: [] }; 
+      } 
+        const index = queues[boothId]?.queue.findIndex((user) =>{
             console.log('filter: ',user)
            return user.userId === userId
         } )
@@ -147,9 +150,9 @@ io.use(function (socket, next) {
       io.emit('queueUpdated', { boothId, queue: queues[boothId] });
     });
 
-    socket.on("leaveQueue", () => {
+    socket.on("leaveQueue", ({boothId}) => {
       console.log("socket.decoded.userId", socket.decoded.userId);
-      const { userId, boothId } = socket.decoded;
+      const { userId } = socket.decoded;
       if (!userId || !boothId) {
         io.emit("error", " either userId is missing  or boothId");
         return;
@@ -174,10 +177,16 @@ io.use(function (socket, next) {
      * @pram  [{userId ,username , location }, ...{}]
      * @description u can say find() all keys $projection {userId, username ,location}
      */
-    socket.on("getAllUser", async () => {
+    socket.on("getAllUser", async (query) => {
+      console.log("query: ", query);
+      const { floor } = query
+      const filter = {status: true}
+      if(floor !== undefined){
+        filter[`location.floor`] = floor
+      }
       io.emit(
         "getAllUserDetails",
-        await userHelper.getUsersBySpecificProjection({ status: true }, [
+        await userHelper.getUsersBySpecificProjection(filter, [
           "userId",
           "userName",
           "location",
