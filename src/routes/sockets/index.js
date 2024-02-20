@@ -71,6 +71,35 @@ function getAllQueuesLength() {
   return queueLengths || [];
 }
 
+async function leaveQueue( socket={} ){
+  const { userId , boothId , role } = socket
+  if (!userId || !boothId) {
+    io.emit("error", " either userId is missing  or boothId");
+    return;
+  }
+  console.log("start ========= queues: ", queues);
+  if (queues[boothId]) {
+    if (role == "UserPlayer") {
+      if (queues[boothId].queue?.length) {
+        queues[boothId].queue = queues[boothId].queue.filter((user) => {
+          console.log('item =================> ', user);
+          return user.userId !== userId
+        });
+      }
+      console.log('queues[boothId]: ', queues[boothId]);
+    }
+    else {
+      console.log('queue is empty');
+    }
+    console.log("before ------queues[boothId]: ", queues[boothId]);
+    if (role !== "UserPlayer") {
+      queues[boothId].representative = {};
+    }
+    console.log("after ------queues[boothId]: ", queues[boothId]);
+    io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
+  }
+}
+
 //----------------------------------------------------------------    
 io.use(function (socket, next) {
   console.log("someone is trying to connect...");
@@ -113,58 +142,64 @@ io.use(function (socket, next) {
     // });
 
     socket.on("enterQueue", ({ boothId, username }) => {
-      console.log(" username: ", username, );
+      console.log(" username: ", username );
       console.log("socket.decoded.userId", socket.decoded.userId);
-      const { userId ,role } = socket.decoded;
+
+      const { userId, role } = socket.decoded;
       console.log("boothId,: ", boothId, " userId: ", userId);
 
-        if( !userId || !boothId){
-            io.emit('error'," either userId is missing  or boothId");
-            return;
-        }
-      if (!queues[boothId]){ 
-        queues[boothId] = { representative: {} , queue: [] }; 
-      } 
-        const index = queues[boothId]?.queue.findIndex((user) =>{
-            console.log('filter: ',user)
-           return user.userId === userId
-        } )
-        console.log("index: ",index);
-      if(index != -1){
-        
-        //that user already exist in the queue
-        // queues[boothId][index].queue.username = username
-        // role ==="UserPlayer" ? queues[boothId][index].queue.role = role : null
-
-      }
-      else{
-            if (role =="UserPlayer"){
-                queues[boothId].queue.push({userId , username , role});
-            }
-            else {
-                queues[boothId].representative = {userId , username , role};
-            }
-        console.log('queues[boothId]: ', queues[boothId]);
-      }
-      console.log('queues: ', queues);
-      io.emit('queueUpdated', { boothId, queue: queues[boothId] });
-    });
-
-    socket.on("leaveQueue", ({boothId}) => {
-      console.log("socket.decoded.userId", socket.decoded.userId);
-      const { userId } = socket.decoded;
+      //update the boothId of the connected user
+      socket.decoded.boothId = boothId;
       if (!userId || !boothId) {
-        io.emit("error", " either userId is missing  or boothId");
+        io.emit('error', " either userId is missing  or boothId");
         return;
       }
-      if (queues[boothId]) {
-        queues[boothId] = queues[boothId].queue.filter((user) =>{
-            console.log('item => ', user);
-           return  user.userId !== userId
-        } );
-        console.log('queues',  queues[boothId]);
-        io.emit('queueUpdated', { boothId, queue: queues[boothId] });
+      if (!queues[boothId] || queues[boothId]?.length == 0) {
+        console.log("initialized");
+        queues[boothId] = { representative: {}, queue: [] };
       }
+      console.log("queues[boothId] = ", queues[boothId])
+      let index = -1;
+      if (queues[boothId]?.queue?.length) {
+        index = queues[boothId]?.queue.findIndex((user) => {
+          console.log('filter: ', user)
+          return user.userId === userId
+        })
+      }
+      else {
+        console.log('queue is empty');
+      }
+      console.log("index: ", index);
+      if (index != -1) {
+        console.log("index-------------------------: ", index);
+        //that user already exist in the queue
+      }
+      else {
+
+        if (role == "UserPlayer") {
+          console.log("player added to queue");
+          queues[boothId].queue.push({ userId, username, role });
+        }
+        else {
+          queues[boothId].representative = { userId, username, role };
+        }
+        console.log('queues[boothId]: ', queues[boothId]);
+      }
+
+
+
+      console.log('queues: ', queues);
+      console.log("representative", queues[boothId].representative)
+      io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
+    });
+
+    socket.on("leaveQueue", async ({ boothId }) => {
+      console.log("socket.decoded: ", socket.decoded);
+      // const { userId, role } = socket.decoded;
+
+      //update the boothId of the connected user
+      socket.decoded.boothId = boothId;
+      await leaveQueue({...socket.decoded});
     });
 
     socket.on("getQueueLengths", () => {
@@ -177,11 +212,11 @@ io.use(function (socket, next) {
      * @pram  [{userId ,username , location }, ...{}]
      * @description u can say find() all keys $projection {userId, username ,location}
      */
-    socket.on("getAllUser", async (query) => {
+    socket.on("getAllUser", async (query={}) => {
       console.log("query: ", query);
       const { floor } = query
-      const filter = {status: true}
-      if(floor !== undefined){
+      const filter = { status: true }
+      if (floor !== undefined) {
         filter[`location.floor`] = floor
       }
       io.emit(
@@ -216,21 +251,27 @@ io.use(function (socket, next) {
       );
     });
 
-    socket.on('disconnect', async () =>{
-        if(socket.decoded.userId){
-            //soft- delete from the socket
-            console.log("disconnect -> socket.decoded",socket.decoded)
-            if(socket.decoded.role === "BoothRepresentativePlayer"){
-                await boothHelper.updateBooth(socket.decoded.boothId, {availabilityStatus: false})
-            }
-            else{
-                await userHelper.updateUser(socket.decoded.userId, { status: false })
-            }
+    socket.on('disconnect', async () => {
+      if (socket.decoded.userId) {
+        //soft- delete from the socket
+        console.log("disconnect -> socket.decoded", socket.decoded)
+
+        if (socket.decoded.role === "BoothRepresentativePlayer") {
+          await boothHelper.updateBooth(socket.decoded.boothId, { availabilityStatus: false })
         }
-        else{
-            console.log("User ID not found")
+        await userHelper.updateUser(socket.decoded.userId, { status: false })
+        console.log("socket.decoded.boothId:  ",socket.decoded.boothId)
+
+        //leaveQueue is called when the boothId is found
+        if(socket.decoded.boothId){
+          console.log("leaveQueue =================== on disconection   ")
+          await leaveQueue(socket.decoded)
         }
-        
+      }
+      else {
+        console.log("User ID not found")
+      }
+
     });
   })
   .on("error", (err) => {
