@@ -17,9 +17,9 @@ const getAnalyticsBySearch = async (options, bySearch) => {
       options.pagination = true;
     }
 
-    if (bySearch._id) {
-      query._id = String(bySearch._id);
-      delete bySearch._id;
+    if (bySearch.userId) {
+      query.userId = String(bySearch.userId);
+      delete bySearch.userId;
     }
 
     if (bySearch) {
