@@ -71,6 +71,35 @@ function getAllQueuesLength() {
   return queueLengths || [];
 }
 
+async function leaveQueue( socket={} ){
+  const { userId , boothId , role } = socket
+  if (!userId || !boothId) {
+    io.emit("error", " either userId is missing  or boothId");
+    return;
+  }
+  console.log("start ========= queues: ", queues);
+  if (queues[boothId]) {
+    if (role == "UserPlayer") {
+      if (queues[boothId].queue?.length) {
+        queues[boothId].queue = queues[boothId].queue.filter((user) => {
+          console.log('item =================> ', user);
+          return user.userId !== userId
+        });
+      }
+      console.log('queues[boothId]: ', queues[boothId]);
+    }
+    else {
+      console.log('queue is empty');
+    }
+    console.log("before ------queues[boothId]: ", queues[boothId]);
+    if (role !== "UserPlayer") {
+      queues[boothId].representative = {};
+    }
+    console.log("after ------queues[boothId]: ", queues[boothId]);
+    io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
+  }
+}
+
 //----------------------------------------------------------------    
 io.use(function (socket, next) {
   console.log("someone is trying to connect...");
@@ -113,11 +142,14 @@ io.use(function (socket, next) {
     // });
 
     socket.on("enterQueue", ({ boothId, username }) => {
-      console.log(" username: ", username,);
+      console.log(" username: ", username );
       console.log("socket.decoded.userId", socket.decoded.userId);
+
       const { userId, role } = socket.decoded;
       console.log("boothId,: ", boothId, " userId: ", userId);
 
+      //update the boothId of the connected user
+      socket.decoded.boothId = boothId;
       if (!userId || !boothId) {
         io.emit('error', " either userId is missing  or boothId");
         return;
@@ -161,42 +193,13 @@ io.use(function (socket, next) {
       io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
     });
 
-    socket.on("leaveQueue", ({ boothId }) => {
+    socket.on("leaveQueue", async ({ boothId }) => {
       console.log("socket.decoded: ", socket.decoded);
-      const { userId, role } = socket.decoded;
-      if (!userId || !boothId) {
-        io.emit("error", " either userId is missing  or boothId");
-        return;
-      }
-      console.log("start ========= queues: ", queues);
-      if (queues[boothId]) {
-        if (role == "UserPlayer") {
+      // const { userId, role } = socket.decoded;
 
-          if (queues[boothId].queue?.length) {
-
-            queues[boothId].queue = queues[boothId].queue.filter((user) => {
-              console.log('item =================> ', user);
-              return user.userId !== userId
-            }
-
-            );
-          }
-
-          console.log('queues[boothId]: ', queues[boothId]);
-        }
-        else {
-          console.log('queue is empty');
-
-        }
-        console.log("before ------queues[boothId]: ", queues[boothId]);
-        if (role !== "UserPlayer") {
-          queues[boothId].representative = {};
-        }
-        console.log("after ------queues[boothId]: ", queues[boothId]);
-
-        console.log('queues', queues[boothId]);
-        io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
-      }
+      //update the boothId of the connected user
+      socket.decoded.boothId = boothId;
+      await leaveQueue({...socket.decoded});
     });
 
     socket.on("getQueueLengths", () => {
@@ -252,11 +255,17 @@ io.use(function (socket, next) {
       if (socket.decoded.userId) {
         //soft- delete from the socket
         console.log("disconnect -> socket.decoded", socket.decoded)
+
         if (socket.decoded.role === "BoothRepresentativePlayer") {
           await boothHelper.updateBooth(socket.decoded.boothId, { availabilityStatus: false })
         }
-        else {
-          await userHelper.updateUser(socket.decoded.userId, { status: false })
+        await userHelper.updateUser(socket.decoded.userId, { status: false })
+        console.log("socket.decoded.boothId:  ",socket.decoded.boothId)
+
+        //leaveQueue is called when the boothId is found
+        if(socket.decoded.boothId){
+          console.log("leaveQueue =================== on disconection   ")
+          await leaveQueue(socket.decoded)
         }
       }
       else {
