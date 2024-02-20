@@ -1,9 +1,9 @@
-'use strict'
+"use strict";
 
 // const { generateRandomId } = require('../../utils/helperFunctions')
-const base64id = require('base64id')
-const userHelper = require('../../helpers/user.helper')
-const boothHelper = require('../../helpers/booth.helper')
+const base64id = require("base64id");
+const userHelper = require("../../helpers/user.helper");
+const boothHelper = require("../../helpers/booth.helper");
 
 /* Socket Room Data Sample
 [
@@ -65,14 +65,13 @@ const userConnections = new Map();
  */
 function getAllQueuesLength() {
   const queueLengths = Object.entries(queues).map(([boothId, userQueue]) => {
-
     return { boothId, length: userQueue?.queue.length };
   });
   return queueLengths || [];
 }
 
-async function leaveQueue( socket={} ){
-  const { userId , boothId , role } = socket
+async function leaveQueue(socket = {}) {
+  const { userId, boothId, role } = socket;
   if (!userId || !boothId) {
     io.emit("error", " either userId is missing  or boothId");
     return;
@@ -82,25 +81,28 @@ async function leaveQueue( socket={} ){
     if (role == "UserPlayer") {
       if (queues[boothId].queue?.length) {
         queues[boothId].queue = queues[boothId].queue.filter((user) => {
-          console.log('item =================> ', user);
-          return user.userId !== userId
+          console.log("item =================> ", user);
+          return user.userId !== userId;
         });
       }
-      console.log('queues[boothId]: ', queues[boothId]);
-    }
-    else {
-      console.log('queue is empty');
+      console.log("queues[boothId]: ", queues[boothId]);
+    } else {
+      console.log("queue is empty");
     }
     console.log("before ------queues[boothId]: ", queues[boothId]);
     if (role !== "UserPlayer") {
       queues[boothId].representative = {};
     }
     console.log("after ------queues[boothId]: ", queues[boothId]);
-    io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
+    io.emit("queueUpdated", {
+      boothId,
+      representative: queues[boothId].representative,
+      queue: queues[boothId].queue,
+    });
   }
 }
 
-//----------------------------------------------------------------    
+//----------------------------------------------------------------
 io.use(function (socket, next) {
   console.log("someone is trying to connect...");
   console.log("here is his socket.id: ", socket.id);
@@ -142,7 +144,7 @@ io.use(function (socket, next) {
     // });
 
     socket.on("enterQueue", ({ boothId, username }) => {
-      console.log(" username: ", username );
+      console.log(" username: ", username);
       console.log("socket.decoded.userId", socket.decoded.userId);
 
       const { userId, role } = socket.decoded;
@@ -151,46 +153,44 @@ io.use(function (socket, next) {
       //update the boothId of the connected user
       socket.decoded.boothId = boothId;
       if (!userId || !boothId) {
-        io.emit('error', " either userId is missing  or boothId");
+        io.emit("error", " either userId is missing  or boothId");
         return;
       }
       if (!queues[boothId] || queues[boothId]?.length == 0) {
         console.log("initialized");
         queues[boothId] = { representative: {}, queue: [] };
       }
-      console.log("queues[boothId] = ", queues[boothId])
+      console.log("queues[boothId] = ", queues[boothId]);
       let index = -1;
       if (queues[boothId]?.queue?.length) {
         index = queues[boothId]?.queue.findIndex((user) => {
-          console.log('filter: ', user)
-          return user.userId === userId
-        })
-      }
-      else {
-        console.log('queue is empty');
+          console.log("filter: ", user);
+          return user.userId === userId;
+        });
+      } else {
+        console.log("queue is empty");
       }
       console.log("index: ", index);
       if (index != -1) {
         console.log("index-------------------------: ", index);
         //that user already exist in the queue
-      }
-      else {
-
+      } else {
         if (role == "UserPlayer") {
           console.log("player added to queue");
           queues[boothId].queue.push({ userId, username, role });
-        }
-        else {
+        } else {
           queues[boothId].representative = { userId, username, role };
         }
-        console.log('queues[boothId]: ', queues[boothId]);
+        console.log("queues[boothId]: ", queues[boothId]);
       }
 
-
-
-      console.log('queues: ', queues);
-      console.log("representative", queues[boothId].representative)
-      io.emit('queueUpdated', { boothId, representative: queues[boothId].representative, queue: queues[boothId].queue });
+      console.log("queues: ", queues);
+      console.log("representative", queues[boothId].representative);
+      io.emit("queueUpdated", {
+        boothId,
+        representative: queues[boothId].representative,
+        queue: queues[boothId].queue,
+      });
     });
 
     socket.on("leaveQueue", async ({ boothId }) => {
@@ -199,7 +199,7 @@ io.use(function (socket, next) {
 
       //update the boothId of the connected user
       socket.decoded.boothId = boothId;
-      await leaveQueue({...socket.decoded});
+      await leaveQueue({ ...socket.decoded });
     });
 
     socket.on("getQueueLengths", () => {
@@ -212,12 +212,12 @@ io.use(function (socket, next) {
      * @pram  [{userId ,username , location }, ...{}]
      * @description u can say find() all keys $projection {userId, username ,location}
      */
-    socket.on("getAllUser", async (query={}) => {
+    socket.on("getAllUser", async (query = {}) => {
       console.log("query: ", query);
-      const { floor } = query
-      const filter = { status: true }
+      const { floor } = query;
+      const filter = { status: true };
       if (floor !== undefined) {
-        filter[`location.floor`] = floor
+        filter[`location.floor`] = floor;
       }
       io.emit(
         "getAllUserDetails",
@@ -241,9 +241,22 @@ io.use(function (socket, next) {
         location: location,
       });
       console.log("updateUser: ", updateUser);
+
+      // Extract the floor from the updated location
+      const floor = location?.floor;
+
+      // Prepare the filter for getting users. Start with status = true
+      const filter = { status: true };
+
+      // If floor is defined, add it to the filter
+      if (floor !== undefined) {
+        filter[`location.floor`] = floor;
+      }
+
+      // Emit the updated list of users filtered by floor if provided
       io.emit(
         "getAllUserDetails",
-        await userHelper.getUsersBySpecificProjection({ status: true }, [
+        await userHelper.getUsersBySpecificProjection(filter, [
           "userId",
           "userName",
           "location",
@@ -251,27 +264,27 @@ io.use(function (socket, next) {
       );
     });
 
-    socket.on('disconnect', async () => {
+    socket.on("disconnect", async () => {
       if (socket.decoded.userId) {
         //soft- delete from the socket
-        console.log("disconnect -> socket.decoded", socket.decoded)
+        console.log("disconnect -> socket.decoded", socket.decoded);
 
         if (socket.decoded.role === "BoothRepresentativePlayer") {
-          await boothHelper.updateBooth(socket.decoded.boothId, { availabilityStatus: false })
+          await boothHelper.updateBooth(socket.decoded.boothId, {
+            availabilityStatus: false,
+          });
         }
-        await userHelper.updateUser(socket.decoded.userId, { status: false })
-        console.log("socket.decoded.boothId:  ",socket.decoded.boothId)
+        await userHelper.updateUser(socket.decoded.userId, { status: false });
+        console.log("socket.decoded.boothId:  ", socket.decoded.boothId);
 
         //leaveQueue is called when the boothId is found
-        if(socket.decoded.boothId){
-          console.log("leaveQueue =================== on disconection   ")
-          await leaveQueue(socket.decoded)
+        if (socket.decoded.boothId) {
+          console.log("leaveQueue =================== on disconection   ");
+          await leaveQueue(socket.decoded);
         }
+      } else {
+        console.log("User ID not found");
       }
-      else {
-        console.log("User ID not found")
-      }
-
     });
   })
   .on("error", (err) => {
