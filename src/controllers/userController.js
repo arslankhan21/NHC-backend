@@ -32,20 +32,40 @@ const getUserByID = async (req, res) => {
   }
 };
 
+// const getUsers = async (req, res) => {
+//   try {
+//     const query = req.query;
+//     console.log("query", query);
+//     let user;
+//     if (query) {
+//       user = await userHelper.getUsers(query);
+//     } else {
+//       user = await userHelper.getUsers();
+//     }
+//     return responseSuccess(res, user);
+//   } catch (error) {
+//     console.log("3333333333333", error);
+//     if (ERRORS[error.message]) {
+//       return responseBadRequest(res, ERRORS[error.message]);
+//     }
+//     return responseServerSideError(res, error);
+//   }
+// };
+
 const getUsers = async (req, res) => {
   try {
-    const query = req.query
-    console.log("query", query)
+    const query = req.query;
+    console.log("query", query);
     let user;
-    if(query){
-      user = await userHelper.getUsers(query);
-    }
-    else{
-      user = await userHelper.getUsers();
-    }
+    // Check for the 'random' query parameter and convert it to a boolean
+    const random = query.random === "true";
+
+    // Adjust the call to userHelper.getUsers to include the 'random' flag
+    user = await userHelper.getUsers(query, [], random);
+
     return responseSuccess(res, user);
   } catch (error) {
-    console.log("3333333333333",error);
+    console.log("Error", error);
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
     }

@@ -32,36 +32,88 @@ const getUserByID = async (userId) => {
   }
 };
 
-const getUsers = async (filter={}, projection=[]) => {
+// const getUsers = async (filter = {}, projection = []) => {
+//   try {
+//     let findQuery = filter;
+//     // Dynamically constructing the findQuery based on filter object
+//     if (Object.keys(filter).length !== 0) {
+//       findQuery = Object.keys(filter).reduce((acc, key) => {
+//         if (filter[key]) {
+//           if (key === "status") {
+//             acc[key] = filter[key];
+//           } else {
+//             acc[key] = { $regex: new RegExp(filter[key], "i") };
+//           }
+//         }
+//         return acc;
+//       }, {});
+//     }
+
+//     // Constructing the projection fields
+//     let projectionFields = {};
+//     if (projection.length !== 0) {
+//       projectionFields = projection.reduce((acc, field) => {
+//         acc[field] = 1;
+//         return acc;
+//       }, {});
+//     }
+
+//     let query = userSchema.find(findQuery, projectionFields).exec();
+//     return query;
+//   } catch (error) {
+//     throw new Error(`Failed to get all user details: ${error.message}`);
+//   }
+// };
+
+const getUsers = async (filter = {}, projection = [], random = false) => {
   try {
-    let findQuery = filter
-    // Dynamically constructing the findQuery based on filter object
-    if (Object.keys(filter).length !== 0) {
-      findQuery = Object.keys(filter).reduce((acc, key) => {
-        if (filter[key]) {
-          if(key === "status" ) {
-            acc[key] = filter[key];
+    let query;
+    if (random) {
+      // Handle random user selection
+      let aggregationPipeline = [{ $sample: { size: 20 } }];
+
+      // Apply projection only if there are specific fields requested
+      // if (projection.length > 0) {
+      //   const projectionStage = {
+      //     $project: projection.reduce(
+      //       (acc, field) => ({ ...acc, [field]: 1 }),
+      //       { _id: 1 }
+      //     ), // Ensure _id is always included
+      //   };
+      //   aggregationPipeline.push(projectionStage);
+      // }
+
+      query = userSchema.aggregate(aggregationPipeline);
+    } else {
+      let findQuery = {};
+      // Logic for constructing the findQuery
+      if (Object.keys(filter).length !== 0) {
+        findQuery = Object.keys(filter).reduce((acc, key) => {
+          if (filter[key]) {
+            if (key == "status") {
+              // Convert status to boolean
+              acc[key] = filter[key] === "true" ? true : false;
+            } else {
+              // Apply regex for other fields for partial matching
+              acc[key] = { $regex: new RegExp(filter[key], "i") };
+            }
           }
-          else{
-            acc[key] = { $regex: new RegExp(filter[key], 'i') };
-          }
+          return acc;
+        }, {});
+      }
 
-        }
-        return acc;
-      }, {});
+      // Constructing the projection fields
+      let projectionFields = {};
+      if (projection.length !== 0) {
+        projectionFields = projection.reduce((acc, field) => {
+          acc[field] = 1;
+          return acc;
+        }, {});
+      }
+
+      query = userSchema.find(findQuery, projectionFields).exec();
     }
-
-    // Constructing the projection fields
-    let projectionFields = {};
-    if (projection.length !== 0) {
-      projectionFields = projection.reduce((acc, field) => {
-        acc[field] = 1;
-        return acc;
-      }, {});
-    }
-
-    let query = userSchema.find(findQuery ,projectionFields).exec();
-    return query;
+    return await query; // Ensure the query is executed and awaited
   } catch (error) {
     throw new Error(`Failed to get all user details: ${error.message}`);
   }
@@ -70,9 +122,12 @@ const getUsers = async (filter={}, projection=[]) => {
 const updateUser = async (userId, updation) => {
   try {
     if (updation?.userId) {
-      let userIdConverter=updation?.userId;
+      let userIdConverter = updation?.userId;
 
-      if (updation?.userId !== undefined && typeof updation?.userId !== "string") {
+      if (
+        updation?.userId !== undefined &&
+        typeof updation?.userId !== "string"
+      ) {
         userIdConverter = String(userIdConverter);
       }
       let checkUserExist = await userSchema
@@ -85,7 +140,6 @@ const updateUser = async (userId, updation) => {
     return userSchema
       .findOneAndUpdate({ userId: userId }, updation, { new: true })
       .exec();
-
   } catch (error) {
     if (error.message == "DUPLICATE_USER") {
       throw new Error(`DUPLICATE_USER`);
@@ -95,21 +149,20 @@ const updateUser = async (userId, updation) => {
 };
 
 const filterUsers = async () => {
-  try{
+  try {
     let findQuery = {};
-    const { status , role} = filter;
-    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
-    if( status !== undefined ){
-      findQuery.status = { $regex: new RegExp(status, 'i') }
+    const { status, role } = filter;
+    const projectionFields = projection.filter(Boolean).join(" ") + " -_id";
+    if (status !== undefined) {
+      findQuery.status = { $regex: new RegExp(status, "i") };
     }
-    if( role ){
-      findQuery.role = { $regex: new RegExp(role, 'i') }
+    if (role) {
+      findQuery.role = { $regex: new RegExp(role, "i") };
     }
-    return await userSchema.find(findQuery ,projectionFields)
+    return await userSchema.find(findQuery, projectionFields);
+  } catch (err) {
+    console.log("error: ", err);
   }
-  catch(err){
-    console.log("error: ", err)
-  };
 };
 
 const deleteUser = async (userId) => {
@@ -120,11 +173,11 @@ const deleteUser = async (userId) => {
   }
 };
 
-const getUsersBySpecificProjection = async (where , projection) => {
+const getUsersBySpecificProjection = async (where, projection) => {
   try {
     // Construct the projection string dynamically
-    console.log("where: ", where)
-    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
+    console.log("where: ", where);
+    const projectionFields = projection.filter(Boolean).join(" ") + " -_id";
     let query = await userSchema.find(where, projectionFields).lean();
 
     return query;
@@ -140,5 +193,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getUsersBySpecificProjection,
-  filterUsers
+  filterUsers,
 };
