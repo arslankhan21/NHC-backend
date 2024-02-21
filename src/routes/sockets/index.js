@@ -270,7 +270,14 @@ io.use(function (socket, next) {
         console.log("disconnect -> socket.decoded", socket.decoded);
 
         if (socket.decoded.role === "BoothRepresentativePlayer") {
+          console.log();
           await boothHelper.updateBooth(socket.decoded.boothId, {
+            availabilityStatus: false,
+          });
+
+          // Emit the boothId and availability status to all connected clients
+          io.emit("boothDetailsUpdated", {
+            boothId: socket.decoded.boothId,
             availabilityStatus: false,
           });
         }
