@@ -70,7 +70,10 @@ const getUsers = async (filter = {}, projection = [], random = false) => {
     let query;
     if (random) {
       // Handle random user selection
-      let aggregationPipeline = [{ $sample: { size: 20 } }];
+      let aggregationPipeline = [
+        { $match: { status: false } }, // Filter documents where status is false
+        { $sample: { size: 20 } },
+      ];
 
       // Apply projection only if there are specific fields requested
       // if (projection.length > 0) {
@@ -94,6 +97,7 @@ const getUsers = async (filter = {}, projection = [], random = false) => {
               // Convert status to boolean
               acc[key] = filter[key] === "true" ? true : false;
             } else {
+              console.log("other than random");
               // Apply regex for other fields for partial matching
               acc[key] = { $regex: new RegExp(filter[key], "i") };
             }
