@@ -101,6 +101,53 @@ async function leaveQueue(socket = {}) {
     });
   }
 }
+async function enterQueue(socket = {} , username=null) {
+  const { userId, boothId, role } = socket;
+  try {
+    if (!userId || !boothId) {
+      io.emit("error", " either userId is missing  or boothId");
+      return;
+    }
+    if (!queues[boothId] || queues[boothId]?.length == 0) {
+      console.log("initialized");
+      queues[boothId] = { representative: {}, queue: [] };
+    }
+    console.log("queues[boothId] = ", queues[boothId]);
+    let index = -1;
+    if (queues[boothId]?.queue?.length) {
+      index = queues[boothId]?.queue.findIndex((user) => {
+        console.log("filter: ", user);
+        return user.userId === userId;
+      });
+    } else {
+      console.log("queue is empty");
+    }
+    console.log("index: ", index);
+    if (index != -1) {
+      console.log("index-------------------------: ", index);
+      //that user already exist in the queue
+    } else {
+      if (role == "UserPlayer") {
+        console.log("player added to queue");
+        queues[boothId].queue.push({ userId, username, role });
+      } else {
+        queues[boothId].representative = { userId, username, role };
+      }
+      console.log("queues[boothId]: ", queues[boothId]);
+    }
+
+    console.log("queues: ", queues);
+      console.log("representative", queues[boothId].representative);
+      io.emit("queueUpdated", {
+        boothId,
+        representative: queues[boothId].representative,
+        queue: queues[boothId].queue,
+      });
+  }
+  catch (e) {
+    console.log("error -> enterQueue : ", e);
+  }
+}
 
 //----------------------------------------------------------------
 io.use(function (socket, next) {
@@ -119,6 +166,28 @@ io.use(function (socket, next) {
     (async () => {
       await userHelper.updateUser(socket.decoded.userId, { status: true });
     })();
+
+    (async () => {
+      try{
+        console.log("immediate inovke for representative socket");
+        if(socket.decoded.role === "BoothRepresentativePlayer"){
+          console.log("role found ---");
+          const booth = await boothHelper.filterBooths({ representative: socket.decoded.userId }, []);
+          const user = await userHelper.getUserByID(socket.decoded.userId);
+          console.log("booth: ", booth , "user: ", user)
+          if (booth.length > 0) {
+            await boothHelper.updateBooth(booth[0].boothId, {
+              availabilityStatus: true,
+            });
+            socket.decoded.boothId = booth[0].boothId;
+            await enterQueue(socket.decoded , user.userName)
+          }
+        }
+      }
+      catch(err){
+        console.log("Error: ",err);
+      }
+    })()
 
     // socket.on('enterQueue', ({ boothId, userId, username }) => {
     //     const user = { userId, username, socketId: socket.id, next: null, prev: null };
@@ -143,54 +212,18 @@ io.use(function (socket, next) {
     //     });
     // });
 
-    socket.on("enterQueue", ({ boothId, username }) => {
+    socket.on("enterQueue", async ({ boothId, username }) => {
       console.log(" username: ", username);
       console.log("socket.decoded.userId", socket.decoded.userId);
 
       const { userId, role } = socket.decoded;
-      console.log("boothId,: ", boothId, " userId: ", userId);
+      console.log("boothId,: ", boothId, " userId: ", userId , " role: " , role);
 
       //update the boothId of the connected user
       socket.decoded.boothId = boothId;
-      if (!userId || !boothId) {
-        io.emit("error", " either userId is missing  or boothId");
-        return;
-      }
-      if (!queues[boothId] || queues[boothId]?.length == 0) {
-        console.log("initialized");
-        queues[boothId] = { representative: {}, queue: [] };
-      }
-      console.log("queues[boothId] = ", queues[boothId]);
-      let index = -1;
-      if (queues[boothId]?.queue?.length) {
-        index = queues[boothId]?.queue.findIndex((user) => {
-          console.log("filter: ", user);
-          return user.userId === userId;
-        });
-      } else {
-        console.log("queue is empty");
-      }
-      console.log("index: ", index);
-      if (index != -1) {
-        console.log("index-------------------------: ", index);
-        //that user already exist in the queue
-      } else {
-        if (role == "UserPlayer") {
-          console.log("player added to queue");
-          queues[boothId].queue.push({ userId, username, role });
-        } else {
-          queues[boothId].representative = { userId, username, role };
-        }
-        console.log("queues[boothId]: ", queues[boothId]);
-      }
 
-      console.log("queues: ", queues);
-      console.log("representative", queues[boothId].representative);
-      io.emit("queueUpdated", {
-        boothId,
-        representative: queues[boothId].representative,
-        queue: queues[boothId].queue,
-      });
+      await enterQueue(socket.decoded); // only decoded object needed
+      
     });
 
     socket.on("leaveQueue", async ({ boothId }) => {
