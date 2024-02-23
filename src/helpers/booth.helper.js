@@ -34,9 +34,9 @@ const getBoothByID = async (boothId) => {
     throw new Error(`Failed to get booth details by this id: ${error.message}`);
   }
 };
-const filterBooths = async (filter, projection) => {
+const filterBooths = async (filter={}, projection=[]) => {
   try{
-    const projectionFields = projection.filter(Boolean).join(' ') + ' -_id';
+    const projectionFields = projection.length ? projection.filter(Boolean).join(' ') + ' -_id' : [];
 
     // Dynamically constructing the findQuery based on filter object
     let findQuery = Object.keys(filter).reduce((acc, key) => {
