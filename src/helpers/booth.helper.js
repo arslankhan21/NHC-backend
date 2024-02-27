@@ -28,7 +28,6 @@ const createBooth = async (boothDetails) => {
 const getBoothByID = async (boothId) => {
   try {
     let query = boothSchema.findOne({ boothId: boothId }).exec();
-
     return query;
   } catch (error) {
     throw new Error(`Failed to get booth details by this id: ${error.message}`);

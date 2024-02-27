@@ -5,6 +5,7 @@ const {
 } = require("../utils/responseTypes");
 const ERRORS = require("../utils/errorTypes");
 const boothHelper = require("../helpers/booth.helper");
+const userHelper = require("../helpers/user.helper");
 
 const createBooth = async (req, res) => {
   try {
@@ -22,8 +23,13 @@ const getBoothByID = async (req, res) => {
   try {
     const { boothId } = req.params;
     const booth = await boothHelper.getBoothByID(boothId);
+    const result= {}
+    if(booth && booth?.representative){
+      const user = await userHelper.getUserByID(booth.representative)
+      result["gender"] = user.gender
+    }
     console.log(booth);
-    return responseSuccess(res, { ...booth?._doc });
+    return responseSuccess(res, { ...booth?._doc , ...result });
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
