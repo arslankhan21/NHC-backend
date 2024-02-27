@@ -4,6 +4,7 @@
 const base64id = require('base64id')
 const userHelper = require('../../helpers/user.helper')
 const boothHelper = require('../../helpers/booth.helper')
+const conferenceHelper = require('../../helpers/conference.helper')
 
 /* Socket Room Data Sample
 [
@@ -295,6 +296,15 @@ io.use(function (socket, next) {
                         boothId: socket.decoded.boothId,
                         availabilityStatus: false
                     })
+                }
+                if(socket.decoded.role === "ConferenceRoomPlayer"){
+                    const result = await conferenceHelper.updateManyConferences({representativeId : socket.decoded.userId} ,{moderatorAvailabilityStatus: false} , { new: true });
+                    console.log("socket ------------------- where role is ConferenceRoomPlayer " , result)
+                    // Emit the boothId and availability status to all connected clients
+                    // io.emit('boothDetailsUpdated', {
+                    //     boothId: socket.decoded.boothId,
+                    //     moderatorAvailabilityStatus: false
+                    // })
                 }
                 await userHelper.updateUser(socket.decoded.userId, { status: false })
                 console.log('socket.decoded.boothId:  ', socket.decoded.boothId)

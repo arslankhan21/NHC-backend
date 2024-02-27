@@ -42,6 +42,10 @@ const conferenceSchema = new Schema(
     status:{
       type: String, // (pending, approved, started, ended)
       default: "pending",
+    },
+    moderatorAvailabilityStatus:{
+      type: Boolean, // 
+      default: false,
     }
   },
   { timestamps: true }

@@ -10,7 +10,12 @@ const userHelper = require("../helpers/user.helper");
 const createBooth = async (req, res) => {
   try {
     const createdBooth = await boothHelper.createBooth(req.body);
-    return responseSuccess(res, { ...createdBooth });
+    const result = {}
+    if(createdBooth && createdBooth?.representative){
+      const user = await userHelper.getUserByID(createdBooth.representative)
+      result["gender"] = user.gender
+    }
+    return responseSuccess(res, { ...createdBooth , ...result});
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
@@ -64,7 +69,12 @@ const updateBooth = async (req, res) => {
   try {
     const { boothId } = req.params;
     const booth = await boothHelper.updateBooth(boothId, req.body);
-    return responseSuccess(res, { ...booth?._doc });
+    const result = {}
+    if(booth && booth?.representative){
+      const user = await userHelper.getUserByID(booth.representative)
+      result["gender"] = user.gender
+    }
+    return responseSuccess(res, { ...booth?._doc , ...result });
   } catch (error) {
     if (ERRORS[error.message]) {
       return responseBadRequest(res, ERRORS[error.message]);
