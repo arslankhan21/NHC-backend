@@ -115,6 +115,7 @@ const getBooths = async (filter={}, projection=[]) => {
           boothName: 1,
           brochures: 1,
           availabilityStatus: 1,
+          representative: 1,
           createdAt: 1, // Assuming you want the timestamps too
           updatedAt: 1,
           gender: "$representativeDetails.gender", // Adding the user's gender
