@@ -85,6 +85,18 @@ const updateConference = async (id, updateDetails) => {
   }
 };
 
+// Function to update the status of conferences
+async function updateManyConferences(filter={} , update={} , options={}) {
+  try {
+    const result = await Conference.updateMany(filter,update,options);
+    console.log("Conference statuses updated:", result);
+    return result;
+
+  } catch (error) {
+    console.error("Error updating conference statuses:", error);
+  }
+}
+
 const deleteConference = async (id) => {
   try {
     const conference = await Conference.findByIdAndDelete(id);
@@ -100,5 +112,6 @@ module.exports = {
   getAllConferences,
   updateConference,
   deleteConference,
-  filterConferences
+  filterConferences,
+  updateManyConferences
 };
