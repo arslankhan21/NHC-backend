@@ -181,6 +181,10 @@ io.use(function (socket, next) {
                         socket.decoded.boothId = booth[0].boothId
                         await enterQueue(socket.decoded, user.userName)
                     }
+                    io.emit('boothDetailsUpdated', {
+                        boothId: socket.decoded.boothId,
+                        availabilityStatus: true
+                    })
                 }
             } catch (err) {
                 console.log('Error: ', err)
