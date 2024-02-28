@@ -220,7 +220,7 @@ io.use(function (socket, next) {
             //update the boothId of the connected user
             socket.decoded.boothId = boothId
 
-            await enterQueue(socket.decoded) // only decoded object needed
+            await enterQueue(socket.decoded, username) // only decoded object needed
         })
 
         socket.on('leaveQueue', async ({ boothId }) => {
@@ -297,9 +297,9 @@ io.use(function (socket, next) {
                         availabilityStatus: false
                     })
                 }
-                if(socket.decoded.role === "ConferenceRoomPlayer"){
-                    const result = await conferenceHelper.updateManyConferences({representativeId : socket.decoded.userId} ,{moderatorAvailabilityStatus: false} , { new: true });
-                    console.log("socket ------------------- where role is ConferenceRoomPlayer " , result)
+                if (socket.decoded.role === 'ConferenceRoomPlayer') {
+                    const result = await conferenceHelper.updateManyConferences({ representativeId: socket.decoded.userId }, { moderatorAvailabilityStatus: false }, { new: true })
+                    console.log('socket ------------------- where role is ConferenceRoomPlayer ', result)
                     // Emit the boothId and availability status to all connected clients
                     // io.emit('boothDetailsUpdated', {
                     //     boothId: socket.decoded.boothId,
